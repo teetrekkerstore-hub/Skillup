@@ -187,7 +187,12 @@ function touchDaily(){
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2500)}
 function pct(){return Math.round(state.completed.length/lessons.length*100)}
 function showView(name){
-  if(name==="lesson" && !authUser){showAuthModal();toast("Connecte-toi ou crée un compte pour accéder aux leçons.");return;}
+  if(!authUser && ["lesson","paths","progress"].includes(name)){
+    showView("home");
+    authMode="signup";showAuthModal();
+    setAuthMessage(name==="progress"?"Crée un compte gratuit pour sauvegarder et consulter ta progression.":"Crée un compte gratuit pour découvrir les parcours et commencer une formation.");
+    return;
+  }
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${name}`));
   document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
@@ -408,7 +413,7 @@ async function initAuth(){
   const {data}=await supabaseClient.auth.getSession();
   authUser=data.session?.user||null;
   if(authUser)await loadCloudState(authUser);
-  else { state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress(); }
+  else { state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress();showView("home"); }
   updateAuthForm();
   supabaseClient.auth.onAuthStateChange((event,session)=>{
     authUser=session?.user||null;
@@ -456,7 +461,7 @@ document.getElementById("auth-form").addEventListener("submit",async e=>{
 document.getElementById("auth-signout").addEventListener("click",async()=>{
   const {error}=await supabaseClient.auth.signOut();
   if(error){setAuthMessage(error.message,true);return;}
-  authUser=null;clearTimeout(cloudWriteTimer);state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress();showView("paths");updateAuthForm();hideAuthModal();
+  authUser=null;clearTimeout(cloudWriteTimer);state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress();showView("home");updateAuthForm();hideAuthModal();
 });
 
 renderStats();
