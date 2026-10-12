@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10172a">
+  <meta name="description" content="SkillUp : développe tes compétences professionnelles en 5 à 10 minutes par jour.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <title>SkillUp — progresse chaque jour</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" data-view="home" aria-label="SkillUp accueil">
+        <span class="brand-mark">S<span>+</span></span>
+        <span>skillup<span class="brand-dot">.</span></span>
+      </a>
+      <div class="side-label">TON ESPACE</div>
+      <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span> Accueil</button>
+      <button class="nav-item" data-view="paths"><span class="nav-icon">▤</span> Mes parcours</button>
+      <button class="nav-item" data-view="progress"><span class="nav-icon">↗</span> Ma progression</button>
+      <div class="sidebar-bottom">
+        <div class="streak-card">
+          <div class="streak-emoji">🔥</div>
+          <div><strong id="side-streak">0 jour</strong><small>Ta série actuelle</small></div>
+        </div>
+        <p class="sidebar-note">Un petit pas chaque jour. De grandes différences demain.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">S<span>+</span></span> skillup<span class="brand-dot">.</span></div>
+        <div class="topbar-right">
+          <div class="xp-pill"><span>✦</span> <strong id="top-xp">0 XP</strong></div>
+          <button class="avatar" data-view="progress" aria-label="Voir ma progression">M</button>
+        </div>
+      </header>
+
+      <section id="view-home" class="view active">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">TON MOMENT POUR PROGRESSER</p>
+            <h1>Salut, futur toi. <span class="wave">✦</span></h1>
+            <p class="muted lead">10 minutes aujourd’hui peuvent changer ta façon de travailler.</p>
+          </div>
+          <div class="date-chip" id="today-label">TON DÉFI DU JOUR</div>
+        </div>
+
+        <div class="hero-card">
+          <div class="hero-copy">
+            <span class="tag tag-light">PARCOURS À LA UNE</span>
+            <h2>Maîtriser l’IA<br>au travail</h2>
+            <p>Des réflexes simples pour utiliser l’intelligence artificielle avec confiance et gagner du temps.</p>
+            <div class="hero-meta"><span>◷ 7 min / leçon</span><span>•</span><span>Débutant</span><span>•</span><span id="hero-progress-label">0% terminé</span></div>
+            <button class="button button-white" id="continue-learning">Commencer le parcours <span>→</span></button>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="ai-card"><span class="ai-spark">✦</span><strong>IA</strong><small>+ idées</small></div>
+            <div class="float-chip chip-a">✧ Plus clair</div>
+            <div class="float-chip chip-b">↗ Plus efficace</div>
+            <div class="hero-star star-a">✦</div><div class="hero-star star-b">✧</div>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <div><p class="eyebrow">FAIS-EN UNE HABITUDE</p><h2>Ton tableau de bord</h2></div>
+          <button class="text-button" data-view="progress">Voir les progrès →</button>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-icon purple">✦</div><div><span class="stat-label">Points gagnés</span><strong id="stat-xp">0 XP</strong><small>Chaque quiz compte</small></div></article>
+          <article class="stat-card"><div class="stat-icon orange">🔥</div><div><span class="stat-label">Série actuelle</span><strong id="stat-streak">0 jour</strong><small>Reviens demain aussi</small></div></article>
+          <article class="stat-card"><div class="stat-icon mint">✓</div><div><span class="stat-label">Leçons terminées</span><strong id="stat-lessons">0 / 5</strong><small>Chaque étape te rapproche</small></div></article>
+        </div>
+
+        <div class="section-heading path-heading">
+          <div><p class="eyebrow">CHOISIS TA PROCHAINE ÉTAPE</p><h2>Des compétences qui comptent</h2></div>
+          <button class="text-button" data-view="paths">Tous les parcours →</button>
+        </div>
+        <div class="path-grid" id="home-paths"></div>
+        <div class="bottom-quote"><span>✦</span><p>Tu n’as pas besoin d’avoir une heure devant toi. Tu as juste besoin de commencer.</p></div>
+        <div class="install-hint" id="install-hint"><span>📱</span><div><strong>SkillUp dans ta poche</strong><p>Sur un navigateur compatible, ouvre le menu de partage ou du navigateur puis choisis « Ajouter à l’écran d’accueil ».</p></div></div>
+      </section>
+
+      <section id="view-paths" class="view">
+        <div class="page-heading"><p class="eyebrow">APPRENDS À TON RYTHME</p><h1>Mes parcours</h1><p class="muted lead">Des compétences concrètes, une petite victoire à la fois.</p></div>
+        <div class="path-tools">
+          <label class="search-box"><span aria-hidden="true">⌕</span><input id="path-search" type="search" placeholder="Rechercher un parcours…" aria-label="Rechercher un parcours"></label>
+          <div class="filter-row" id="path-filters">
+            <button class="filter active" data-filter="all">Tous</button>
+            <button class="filter" data-filter="available">Disponibles</button>
+            <button class="filter" data-filter="career">Carrière</button>
+            <button class="filter" data-filter="productivity">Productivité</button>
+          </div>
+        </div>
+        <p class="muted results-count" id="path-results-count"></p>
+        <div class="path-grid path-grid-large" id="all-paths"></div>
+      </section>
+
+      <section id="view-lesson" class="view">
+        <button class="back-button" id="back-to-path">← Retour au parcours</button>
+        <div class="lesson-layout">
+          <article class="lesson-main">
+            <div class="lesson-topline"><span class="tag" id="lesson-category">IA & PRODUCTIVITÉ</span><span class="muted" id="lesson-count">LEÇON 1 SUR 5</span></div>
+            <div class="lesson-progress"><span id="lesson-progress-bar"></span></div>
+            <p class="eyebrow" id="lesson-kicker">LES BASES</p>
+            <h1 id="lesson-title">Bien démarrer avec l’IA</h1>
+            <p class="muted lesson-intro" id="lesson-intro"></p>
+            <div id="lesson-content" class="lesson-content"></div>
+            <div class="takeaway"><span class="takeaway-icon">✦</span><div><strong>À retenir</strong><p id="lesson-takeaway"></p></div></div>
+            <div class="reflection-card">
+              <label for="lesson-note"><strong>📝 Mon idée à tester</strong><span>Note une action concrète à essayer au travail. Elle est sauvegardée sur cet appareil.</span></label>
+              <textarea id="lesson-note" rows="3" placeholder="Ex. : utiliser cette structure pour préparer mon prochain compte rendu…"></textarea>
+              <div class="reflection-footer"><span id="note-status">Privé sur cet appareil</span><button class="text-button" id="save-note">Enregistrer ma note</button></div>
+            </div>
+            <div class="quiz-card">
+              <div class="quiz-heading"><span class="quiz-icon">?</span><div><p class="eyebrow">À TOI DE JOUER</p><h2>Vérifie ce que tu as compris</h2></div></div>
+              <p class="quiz-question" id="quiz-question"></p>
+              <div id="quiz-options" class="quiz-options"></div>
+              <div id="quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
+              <button class="button button-primary" id="check-answer" disabled>Vérifier ma réponse</button>
+              <button class="button button-primary hidden" id="next-lesson">Continuer →</button>
+            </div>
+          </article>
+          <aside class="lesson-aside">
+            <div class="aside-card"><div class="aside-icon">🎯</div><h3>Ton objectif</h3><p id="lesson-objective">Comprendre les bases de l’IA générative.</p></div>
+            <div class="aside-card xp-aside"><span class="xp-big">✦</span><h3>Gagne des XP</h3><p>Réponds au quiz pour gagner des points et suivre tes progrès.</p><div class="xp-rule"><span>Bonne réponse</span><strong>+20 XP</strong></div><div class="xp-rule"><span>Leçon terminée</span><strong>+10 XP</strong></div></div>
+            <div class="aside-tip"><strong>💡 Petit conseil</strong><p>Note une idée que tu peux tester dès aujourd’hui dans ton travail.</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-progress" class="view">
+        <div class="page-heading"><p class="eyebrow">CHAQUE EFFORT COMPTE</p><h1>Ta progression</h1><p class="muted lead">Regarde tout ce que tu as déjà accompli.</p></div>
+        <div class="progress-hero">
+          <div><span class="tag tag-light">TON NIVEAU</span><h2 id="level-name">Explorateur</h2><p>Continue à apprendre pour débloquer le niveau suivant.</p><div class="level-track"><span id="level-bar"></span></div><small id="level-caption">0 / 100 XP vers le niveau suivant</small></div>
+          <div class="level-medal">✦<small>NIV. 1</small></div>
+        </div>
+        <div class="stats-grid progress-stats">
+          <article class="stat-card"><div class="stat-icon purple">✦</div><div><span class="stat-label">XP total</span><strong id="progress-xp">0</strong><small>Continue comme ça</small></div></article>
+          <article class="stat-card"><div class="stat-icon orange">🔥</div><div><span class="stat-label">Meilleure série</span><strong id="best-streak">0 jour</strong><small>Ta régularité compte</small></div></article>
+          <article class="stat-card"><div class="stat-icon mint">✓</div><div><span class="stat-label">Quiz réussis</span><strong id="quizzes-passed">0</strong><small>Une question à la fois</small></div></article>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">TES COMPÉTENCES</p><h2>Parcours en cours</h2></div></div>
+        <div class="progress-path-list" id="progress-path-list"></div>
+        <button class="button button-primary" data-view="paths">Découvrir d’autres parcours →</button>
+        <button class="button button-quiet reset-button" id="reset-progress">Réinitialiser ma progression</button>
+      </section>
+
+      <footer class="footer"><span>skillup<span class="brand-dot">.</span></span><span>Apprends un peu. Progresse beaucoup.</span><span>Prototype MVP · Version de test</span></footer>
+    </main>
+  </div>
+  <nav class="mobile-nav">
+    <button class="active" data-view="home"><span>⌂</span>Accueil</button>
+    <button data-view="paths"><span>▤</span>Parcours</button>
+    <button data-view="progress"><span>↗</span>Progrès</button>
+  </nav>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
