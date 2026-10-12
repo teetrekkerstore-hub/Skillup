@@ -224,6 +224,15 @@ function renderPaths(){
   document.getElementById("hero-progress-label").textContent=`${pct()}% terminé`;
 }
 function renderStats(){
+  const logged=!!authUser;
+  document.querySelectorAll(".member-only").forEach(el=>el.hidden=!logged);
+  document.getElementById("guest-welcome").hidden=logged;
+  document.getElementById("auth-open").textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"Mon compte"):"Créer un compte";
+  const avatar=document.getElementById("profile-avatar"); avatar.hidden=!logged; avatar.textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"S").trim().charAt(0).toUpperCase():"";
+  document.getElementById("home-title").textContent=logged?("Salut, "+(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"futur toi")+". ✦"):"Le prochain niveau, c’est toi. ✦";
+  document.getElementById("home-eyebrow").textContent=logged?"TON MOMENT POUR PROGRESSER":"APPRENDS. PROGRESSE. RÉUSSIS.";
+  document.getElementById("home-lead").textContent=logged?"10 minutes aujourd’hui peuvent changer ta façon de travailler.":"Des formations courtes, des compétences utiles et des progrès visibles — à ton rythme.";
+  document.getElementById("today-label").hidden=!logged;
   document.getElementById("top-xp").textContent=`${state.xp} XP`;
   document.getElementById("stat-xp").textContent=`${state.xp} XP`;
   document.getElementById("stat-streak").textContent=`${state.streak||0} jour${state.streak===1?"":"s"}`;
@@ -374,6 +383,8 @@ function updateAuthForm(){
   document.getElementById("auth-switch").classList.toggle("hidden",logged);
   document.getElementById("auth-switch").textContent=authMode==="signup"?"Déjà inscrit ? Se connecter":"Pas encore de compte ? Créer un compte";
   document.getElementById("auth-signout").classList.toggle("hidden",!logged);
+  document.getElementById("google-auth").classList.toggle("hidden",logged);
+  document.querySelector(".auth-divider").classList.toggle("hidden",logged);
   setAuthMessage("");
 }
 async function loadCloudState(user){
@@ -404,7 +415,10 @@ async function initAuth(){
     else if(event==="SIGNED_OUT")toast("Tu es déconnecté de SkillUp.");
   });
 }
-document.getElementById("auth-open").addEventListener("click",showAuthModal);
+document.getElementById("auth-open").addEventListener("click",()=>{authMode=authUser?"login":"signup";showAuthModal();});
+document.getElementById("guest-signup").addEventListener("click",()=>{authMode="signup";showAuthModal();});
+document.getElementById("guest-login").addEventListener("click",()=>{authMode="login";showAuthModal();});
+document.getElementById("google-auth").addEventListener("click",async()=>{if(!supabaseClient){setAuthMessage("Connexion indisponible.",true);return;}setAuthMessage("Redirection vers Google…");const {error}=await supabaseClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.href}});if(error)setAuthMessage(error.message||"Vérifie la configuration Google dans Supabase.",true);});
 document.getElementById("auth-close").addEventListener("click",hideAuthModal);
 document.getElementById("auth-modal").addEventListener("click",e=>{if(e.target.id==="auth-modal")hideAuthModal();});
 document.getElementById("auth-switch").addEventListener("click",()=>{
