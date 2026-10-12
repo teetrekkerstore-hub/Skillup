@@ -18,9 +18,9 @@
       </a>
       <div class="side-label">TON ESPACE</div>
       <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span> Accueil</button>
-      <button class="nav-item" data-view="paths"><span class="nav-icon">▤</span> Mes parcours</button>
-      <button class="nav-item" data-view="progress"><span class="nav-icon">↗</span> Ma progression</button>
-      <div class="sidebar-bottom">
+      <button class="nav-item member-only" data-view="paths" hidden><span class="nav-icon">▤</span> Mes parcours</button>
+      <button class="nav-item member-only" data-view="progress" hidden><span class="nav-icon">↗</span> Ma progression</button>
+      <div class="sidebar-bottom member-only" hidden>
         <div class="streak-card">
           <div class="streak-emoji">🔥</div>
           <div><strong id="side-streak">0 jour</strong><small>Ta série actuelle</small></div>
@@ -42,7 +42,7 @@
       <section id="view-home" class="view active">
         <div class="welcome-row">
           <div><p class="eyebrow" id="home-eyebrow">APPRENDS. PROUVE. DÉCROCHE.</p><h1 id="home-title">Construis tes compétences. Prouve ce que tu sais faire. <span class="wave">✦</span></h1><p class="muted lead" id="home-lead">En 30 jours, construis tes premières preuves de compétences numériques et prépare-toi concrètement à décrocher un stage, un premier emploi ou une mission freelance.</p></div>
-          <div class="date-chip" id="today-label">TON DÉFI DU JOUR</div>
+          <div class="date-chip member-only" id="today-label" hidden>TON DÉFI DU JOUR</div>
         </div>
         <section class="guest-welcome" id="guest-welcome"><div class="guest-welcome-copy"><span class="tag tag-light">TON APPRENTISSAGE COMMENCE ICI</span><h2>Pas seulement apprendre.<br>Montrer ce que tu sais faire.</h2><p>SkillUp t’aide à développer des compétences utiles pour le monde professionnel et à les transformer en preuves concrètes : mini-projets, exercices, livrables et préparation à l’emploi. Crée ton compte pour commencer ton parcours.</p><div class="guest-actions"><button class="button button-white" id="guest-signup">Créer mon compte gratuit <span>→</span></button><button class="guest-login" id="guest-login">J’ai déjà un compte</button></div><div class="guest-benefits"><span>✓ Progression sauvegardée</span><span>✓ Défis et quiz</span><span>✓ À ton rythme</span></div></div><div class="guest-visual" aria-hidden="true"><div class="guest-orb">✦<small>LEVEL UP</small></div><span class="guest-chip guest-chip-one">+20 XP</span><span class="guest-chip guest-chip-two">Une leçon à la fois</span></div></section>
 
@@ -51,7 +51,7 @@
             <span class="tag tag-light">PARCOURS À LA UNE</span>
             <h2>Construis tes premières preuves de compétences</h2>
             <p>Un parcours pratique de 30 jours pour développer des compétences numériques, réaliser des projets et te préparer à décrocher un stage, un premier emploi ou une mission freelance.</p>
-            <div class="hero-meta"><span>◷ 7 min / leçon</span><span>•</span><span>Débutant</span><span>•</span><span id="hero-progress-label">0% terminé</span></div>
+            <div class="hero-meta"><span>◷ 7 min / leçon</span><span>•</span><span>Débutant</span><span class="member-only" hidden>•</span><span id="hero-progress-label" class="member-only" hidden>0% terminé</span></div>
             <button class="button button-white" id="continue-learning">Commencer le parcours <span>→</span></button>
           </div>
           <div class="hero-art" aria-hidden="true">
@@ -93,11 +93,11 @@
           <article class="stat-card"><div class="stat-icon mint">✓</div><div><span class="stat-label">Leçons terminées</span><strong id="stat-lessons">0 / 5</strong><small>Chaque étape te rapproche</small></div></article>
         </div>
 
-        <div class="section-heading path-heading">
+        <div class="section-heading path-heading member-only" hidden>
           <div><p class="eyebrow">CHOISIS TA PROCHAINE ÉTAPE</p><h2>Des compétences qui comptent</h2></div>
           <button class="text-button" data-view="paths">Tous les parcours →</button>
         </div>
-        <div class="path-grid" id="home-paths"></div>
+        <div class="path-grid member-only" id="home-paths" hidden></div>
         <div class="bottom-quote guest-only"><span>✦</span><p>Tu n’as pas besoin d’avoir une heure devant toi. Tu as juste besoin de commencer.</p><button class="text-button" id="bottom-signup">Créer mon compte gratuit →</button></div>
         <div class="install-hint" id="install-hint"><span>📱</span><div><strong>SkillUp dans ta poche</strong><p>Sur un navigateur compatible, ouvre le menu de partage ou du navigateur puis choisis « Ajouter à l’écran d’accueil ».</p></div></div>
       </section>
