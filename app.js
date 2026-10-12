@@ -661,9 +661,9 @@ function downloadCertificatePdf(){
  doc.setDrawColor(...purple);doc.setLineWidth(.55);doc.circle(270,22,8.5,"S");
  doc.setTextColor(...purple);doc.setFontSize(5.2);doc.text(["PARCOURS","VALIDÉ"],270,21.2,{align:"center"});
  // One title only: no duplicate "certificat/attestation"
- doc.setTextColor(...purple);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("ATTESTATION DE RÉUSSITE",mid,43,{align:"center",charSpace:2});
- doc.setDrawColor(...gold);doc.setLineWidth(.65);doc.line(91,49,W-91,49);
- doc.setTextColor(...muted);doc.setFont("helvetica","normal");doc.setFontSize(11);doc.text("SkillUp atteste que",mid,62,{align:"center"});
+ doc.setTextColor(...purple);doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.text("A T T E S T A T I O N   D E   R É U S S I T E",mid,42,{align:"center"});
+ doc.setDrawColor(...gold);doc.setLineWidth(.55);doc.line(99,47,W-99,47);
+ doc.setTextColor(...muted);doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text("SkillUp atteste que",mid,58,{align:"center"});
  // Candidate name with measured font sizing
  let nameSize=27;doc.setFont("times","bolditalic");doc.setFontSize(nameSize);
  while(nameSize>16&&doc.getTextWidth(name)>210){nameSize--;doc.setFontSize(nameSize);}
