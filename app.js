@@ -358,7 +358,6 @@ function updateAuthForm(){
   const logged=!!authUser;
   document.getElementById("auth-open").textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"Mon compte"):"Connexion";
   document.getElementById("auth-title").textContent=logged?"Ton compte SkillUp":"Retrouve ta progression";
-  document.getElementById("auth-description");
   document.querySelector(".auth-description").textContent=logged
     ? "Ton compte est connecté. Ta progression est synchronisée en ligne."
     : "Crée un compte gratuit pour retrouver tes leçons et tes résultats sur tes appareils.";
@@ -422,8 +421,8 @@ document.getElementById("auth-form").addEventListener("submit",async e=>{
       if(data.session){
         authUser=data.user;await loadCloudState(authUser);setAuthMessage("Compte créé et connecté !");updateAuthForm();toast("Bienvenue sur SkillUp !");
       }else{
+        authMode="login";updateAuthForm();
         setAuthMessage("Compte créé ! Consulte tes e-mails pour confirmer ton adresse, puis connecte-toi.");
-        authMode="login";document.getElementById("auth-switch").textContent="Pas encore de compte ? Créer un compte";
       }
     }else{
       const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
