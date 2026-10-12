@@ -65,3 +65,64 @@
 /* Public landing page sections */
 .benefits-section,.categories-section{margin:38px 0}.benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.benefit-card{padding:22px 20px;border:1px solid var(--line);border-radius:18px;background:#fff}.benefit-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;font-size:22px;margin-bottom:17px}.benefit-icon.violet{background:#efedff;color:#6355dc}.benefit-icon.green{background:#e2f7ef;color:#259b78}.benefit-icon.peach{background:#fff0df;color:#dc873e}.benefit-card h3{font-size:16px;margin:0 0 8px}.benefit-card p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.category-card{border:1px solid var(--line);border-radius:18px;padding:22px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:195px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}.category-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px #1e245010}.category-card>span{font-size:25px;width:46px;height:46px;display:grid;place-items:center;background:#ffffffb8;border-radius:14px}.category-card strong{font-size:16px;color:var(--ink)}.category-card small{font-size:12px;line-height:1.5;color:var(--muted)}.category-card b{font-size:11px;margin-top:auto;color:var(--ink)}.category-violet{background:#f0edff}.category-peach{background:#fff0e4}.category-green{background:#e6f7f0}.signup-banner{margin:36px 0;padding:28px 30px;border-radius:22px;background:linear-gradient(110deg,#272f56,#4c40a0);color:white;display:flex;align-items:center;justify-content:space-between;gap:24px}.signup-banner h2{font-size:25px;margin:12px 0 8px}.signup-banner p{max-width:610px;color:#d9dcf3;font-size:13px;line-height:1.65;margin:0}.signup-banner .button{flex-shrink:0}.bottom-quote{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bottom-quote .text-button{margin-left:auto}
 @media(max-width:760px){.benefit-grid,.category-grid{grid-template-columns:1fr}.benefit-card{display:grid;grid-template-columns:44px 1fr;column-gap:13px;padding:17px}.benefit-icon{grid-row:span 2;margin:0}.benefit-card h3{align-self:end}.benefit-card p{grid-column:2}.category-card{min-height:150px}.signup-banner{align-items:flex-start;flex-direction:column;padding:24px}.signup-banner .button{width:100%}.bottom-quote .text-button{margin-left:0}}
+
+/* Editorial landing page refresh: photography, depth and motion */
+:root{scroll-behavior:smooth}
+#view-home{overflow:hidden}
+#home-title{max-width:900px;letter-spacing:-.055em}
+.welcome-row{margin-bottom:24px}
+.guest-welcome{isolation:isolate;display:grid;grid-template-columns:1.03fr .97fr;align-items:stretch;gap:24px;position:relative;overflow:hidden;margin:8px 0 54px;padding:clamp(28px,4vw,56px);min-height:500px;border-radius:30px;background:radial-gradient(ellipse at 10% 0%,#46427e 0%,transparent 42%),linear-gradient(125deg,#171f3d 0%,#272b54 58%,#393077 100%);box-shadow:0 26px 70px #20274a20;animation:hero-rise .8s cubic-bezier(.2,.75,.25,1) both}
+.guest-welcome:before{content:"";position:absolute;z-index:-1;width:430px;height:430px;border:1px solid #ffffff14;border-radius:50%;left:-180px;bottom:-280px;box-shadow:0 0 0 35px #ffffff05,0 0 0 75px #ffffff04}
+.guest-welcome-copy{align-self:center;max-width:590px;padding:10px 0;animation:copy-rise .8s .1s both}
+.hero-kicker{display:inline-flex;align-items:center;gap:9px;color:#c7c9fa;font-size:10px;letter-spacing:.17em;font-weight:850}
+.pulse-dot{width:7px;height:7px;background:#b9f3d9;border-radius:50%;box-shadow:0 0 0 5px #b9f3d91a;animation:dot-pulse 2s infinite}
+.guest-welcome h2{font-size:clamp(42px,5.2vw,68px);font-weight:850;line-height:.99;letter-spacing:-.065em;margin:26px 0 20px;max-width:580px}
+.guest-welcome h2 em{font-style:normal;color:#b9b2ff}
+.guest-welcome p{max-width:490px;font-size:15px;line-height:1.8;color:#d5d8eb}
+.guest-actions{margin-top:28px;gap:18px}
+.guest-actions .button{min-height:52px;padding:0 22px;box-shadow:0 12px 28px #11142a40;transition:transform .2s,box-shadow .2s}
+.guest-actions .button:hover{transform:translateY(-3px);box-shadow:0 16px 32px #11142a55}
+.guest-login{font-size:12px;color:#f0efff;text-decoration:none;border-bottom:1px solid #aaa6e4;padding:8px 0}
+.guest-benefits{gap:10px 16px;margin-top:30px;font-size:10px;color:#e3e5f6}
+.guest-photo{position:relative;align-self:stretch;min-height:370px;border-radius:22px;overflow:visible;margin:4px 0 4px 4px;animation:photo-arrive .9s .15s both}
+.guest-photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:22px;filter:saturate(.82);box-shadow:0 22px 55px #10152c65}
+.photo-overlay{position:absolute;inset:0;border-radius:22px;background:linear-gradient(180deg,#151a2c00 50%,#151a2c9c 100%),linear-gradient(135deg,#4e4a9b25,#11182c35)}
+.floating-proof{position:absolute;left:-28px;bottom:50px;display:flex;align-items:center;gap:11px;padding:14px 17px;border:1px solid #ffffff75;background:#ffffffed;color:#20243c;border-radius:16px;box-shadow:0 15px 42px #0c112a40;animation:float-proof 5s ease-in-out infinite}
+.proof-check{display:grid;place-items:center;width:34px;height:34px;background:#dff7ed;color:#21946d;border-radius:11px;font-size:17px;font-weight:900}
+.floating-proof strong,.floating-proof small{display:block}.floating-proof strong{font-size:12px}.floating-proof small{font-size:10px;color:#72788a;margin-top:3px}
+.photo-caption{position:absolute;right:18px;bottom:20px;color:#fff;font-size:9px;font-weight:800;letter-spacing:.16em;text-shadow:0 2px 10px #0008}.photo-caption span{color:#c7bfff;padding:0 5px}
+.hero-deco{position:absolute;pointer-events:none;border-radius:50%;filter:blur(.5px)}.deco-one{width:170px;height:170px;right:43%;top:-115px;background:#8b80ff1a}.deco-two{width:80px;height:80px;right:42%;bottom:-38px;border:1px solid #c4c0ff40}
+.benefits-section,.categories-section{margin:58px 0}
+.section-heading{margin-bottom:24px}
+.section-heading .eyebrow{font-size:10px;letter-spacing:.19em}
+.section-heading h2{font-size:clamp(26px,3vw,38px);letter-spacing:-.045em;line-height:1.1;margin:10px 0}
+.section-heading .muted{max-width:680px;line-height:1.7}
+.benefit-grid{gap:18px}
+.benefit-card{position:relative;overflow:hidden;border:1px solid #e8e9f2;border-radius:20px;padding:25px;background:linear-gradient(150deg,#fff,#fafaff);transition:transform .25s,box-shadow .25s,border-color .25s}
+.benefit-card:after{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,#7465e8,#c4bfff);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.benefit-card:hover{transform:translateY(-5px);box-shadow:0 18px 40px #20274a10;border-color:#d8d4ff}.benefit-card:hover:after{transform:scaleX(1)}
+.benefit-icon{margin-bottom:22px}
+.category-grid{gap:18px}
+.category-card{position:relative;isolation:isolate;overflow:hidden;min-height:285px;justify-content:flex-end;padding:24px;border:0;border-radius:22px;color:#fff;box-shadow:0 12px 32px #20274a0b;transition:transform .28s,box-shadow .28s}
+.category-card:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#11182a00 15%,#11182ac9 100%);transition:opacity .25s}
+.category-card:hover{transform:translateY(-6px);box-shadow:0 22px 45px #20274a25}
+.category-card:hover .category-photo{transform:scale(1.06)}
+.category-photo{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.category-card>span{position:absolute;top:18px;left:18px;width:42px;height:42px;background:#ffffffeb;color:#39345e;border-radius:13px;font-size:20px}
+.category-card strong{font-size:19px;line-height:1.15;color:#fff;letter-spacing:-.025em}
+.category-card small{font-size:12px;color:#f0f0f8;line-height:1.5}
+.category-card b{font-size:11px;color:#fff;margin-top:9px}
+.category-violet,.category-peach,.category-green{background:#272b54}
+.signup-banner{position:relative;overflow:hidden;margin:56px 0;padding:clamp(28px,4vw,46px);border-radius:26px;background:radial-gradient(circle at 100% 0%,#7465e866,transparent 36%),linear-gradient(115deg,#1c2545,#383078);box-shadow:0 22px 50px #24274d18}
+.signup-banner:after{content:"↗";position:absolute;right:8%;top:-36px;font-size:190px;line-height:1;color:#ffffff09;font-weight:900;pointer-events:none}
+.signup-banner h2{font-size:clamp(27px,3.5vw,40px);letter-spacing:-.05em;line-height:1.05}
+.signup-banner p{font-size:14px;max-width:650px}
+.button-white{transition:transform .2s,box-shadow .2s}.button-white:hover{transform:translateY(-2px)}
+.bottom-quote{padding:25px 0;border-top:1px solid var(--line);color:var(--muted)}
+@keyframes hero-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes copy-rise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes photo-arrive{from{opacity:0;transform:translateX(18px) scale(.985)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes float-proof{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes dot-pulse{0%,100%{box-shadow:0 0 0 4px #b9f3d91a}50%{box-shadow:0 0 0 8px #b9f3d910}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(max-width:760px){.guest-welcome{grid-template-columns:1fr;gap:20px;padding:28px 22px 22px;min-height:0;border-radius:24px;margin-bottom:42px}.guest-welcome-copy{padding:2px 0}.guest-welcome h2{font-size:clamp(39px,11vw,54px);margin:22px 0 15px}.guest-welcome p{font-size:13px;line-height:1.75}.guest-actions{align-items:flex-start;flex-direction:column;gap:12px}.guest-actions .button{width:100%;justify-content:center}.guest-benefits{display:grid;grid-template-columns:1fr 1fr;gap:11px;font-size:9px}.guest-photo{min-height:260px;height:260px;margin:4px 0 0 10px;width:calc(100% - 10px)}.floating-proof{left:-10px;bottom:35px;padding:11px 13px}.photo-caption{font-size:8px}.benefits-section,.categories-section{margin:44px 0}.category-grid{grid-template-columns:1fr}.category-card{min-height:230px}.signup-banner{margin:42px 0}.signup-banner:after{right:-5%;font-size:130px}}
