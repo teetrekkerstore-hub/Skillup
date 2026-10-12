@@ -230,7 +230,7 @@ function renderPaths(){
 }
 function renderStats(){
   const logged=!!authUser;
-  document.querySelectorAll(".member-only").forEach(el=>el.hidden=!logged);
+  document.querySelectorAll(".member-only").forEach(el=>{el.hidden=!logged;});
   document.getElementById("guest-welcome").hidden=logged;
   document.querySelectorAll(".guest-only").forEach(el=>el.hidden=logged);
   document.getElementById("continue-learning").innerHTML=logged?"Continuer mon parcours <span>→</span>":"Créer un compte pour commencer <span>→</span>";
