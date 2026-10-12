@@ -33,21 +33,18 @@
       <header class="topbar">
         <div class="mobile-brand"><span class="brand-mark">S<span>+</span></span> skillup<span class="brand-dot">.</span></div>
         <div class="topbar-right">
-          <button class="auth-open-button" id="auth-open">Connexion</button>
-          <div class="xp-pill"><span>✦</span> <strong id="top-xp">0 XP</strong></div>
-          <button class="avatar" data-view="progress" aria-label="Voir ma progression">M</button>
+          <button class="auth-open-button" id="auth-open">Créer un compte</button>
+          <div class="xp-pill member-only"><span>✦</span> <strong id="top-xp">0 XP</strong></div>
+          <button class="avatar member-only" id="profile-avatar" data-view="progress" aria-label="Voir ma progression" hidden></button>
         </div>
       </header>
 
       <section id="view-home" class="view active">
         <div class="welcome-row">
-          <div>
-            <p class="eyebrow">TON MOMENT POUR PROGRESSER</p>
-            <h1>Salut, futur toi. <span class="wave">✦</span></h1>
-            <p class="muted lead">10 minutes aujourd’hui peuvent changer ta façon de travailler.</p>
-          </div>
+          <div><p class="eyebrow" id="home-eyebrow">APPRENDS. PROGRESSE. RÉUSSIS.</p><h1 id="home-title">Le prochain niveau, c’est toi. <span class="wave">✦</span></h1><p class="muted lead" id="home-lead">Des formations courtes, des compétences utiles et des progrès visibles — à ton rythme.</p></div>
           <div class="date-chip" id="today-label">TON DÉFI DU JOUR</div>
         </div>
+        <section class="guest-welcome" id="guest-welcome"><div class="guest-welcome-copy"><span class="tag tag-light">TON APPRENTISSAGE COMMENCE ICI</span><h2>Un petit pas aujourd’hui.<br>Un vrai progrès demain.</h2><p>Explore nos parcours, découvre la méthode et crée ton compte gratuit pour débloquer les leçons, gagner des XP et retrouver ta progression à tout moment.</p><div class="guest-actions"><button class="button button-white" id="guest-signup">Créer mon compte gratuit <span>→</span></button><button class="guest-login" id="guest-login">J’ai déjà un compte</button></div><div class="guest-benefits"><span>✓ Progression sauvegardée</span><span>✓ Défis et quiz</span><span>✓ À ton rythme</span></div></div><div class="guest-visual" aria-hidden="true"><div class="guest-orb">✦<small>LEVEL UP</small></div><span class="guest-chip guest-chip-one">+20 XP</span><span class="guest-chip guest-chip-two">Une leçon à la fois</span></div></section>
 
         <div class="hero-card">
           <div class="hero-copy">
@@ -66,11 +63,11 @@
           </div>
         </div>
 
-        <div class="section-heading">
+        <div class="section-heading member-only" id="dashboard-heading">
           <div><p class="eyebrow">FAIS-EN UNE HABITUDE</p><h2>Ton tableau de bord</h2></div>
           <button class="text-button" data-view="progress">Voir les progrès →</button>
         </div>
-        <div class="stats-grid">
+        <div class="stats-grid member-only" id="home-stats">
           <article class="stat-card"><div class="stat-icon purple">✦</div><div><span class="stat-label">Points gagnés</span><strong id="stat-xp">0 XP</strong><small>Chaque quiz compte</small></div></article>
           <article class="stat-card"><div class="stat-icon orange">🔥</div><div><span class="stat-label">Série actuelle</span><strong id="stat-streak">0 jour</strong><small>Reviens demain aussi</small></div></article>
           <article class="stat-card"><div class="stat-icon mint">✓</div><div><span class="stat-label">Leçons terminées</span><strong id="stat-lessons">0 / 5</strong><small>Chaque étape te rapproche</small></div></article>
@@ -164,6 +161,7 @@
       <p class="eyebrow">TON ESPACE PERSONNEL</p>
       <h2 id="auth-title">Retrouve ta progression</h2>
       <p class="muted auth-description">Crée un compte gratuit pour retrouver tes leçons et tes résultats sur tes appareils.</p>
+      <button type="button" class="google-auth-button" id="google-auth"><span class="google-g">G</span> Continuer avec Google</button><div class="auth-divider"><span>ou avec ton e-mail</span></div>
       <form id="auth-form">
         <label for="auth-name">Prénom <span>(pour l’inscription)</span></label>
         <input id="auth-name" type="text" autocomplete="given-name" placeholder="Ton prénom">
