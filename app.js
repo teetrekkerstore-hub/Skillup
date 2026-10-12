@@ -78,11 +78,63 @@ const lessons = [
     question:"Comment savoir si un nouvel usage de l’IA vaut la peine d’être conservé ?",
     options:["Parce que l’IA répond très vite.","Parce qu’il est à la mode dans ton secteur.","Parce qu’un test montre une amélioration utile, vérifiée et compatible avec les règles internes."],
     answer:2, explanation:"C’est ça : mesure le bénéfice réel, vérifie la qualité et respecte les règles applicables."
+  },
+  {
+    id:"workflow-design", title:"Construire un workflow IA de bout en bout", kicker:"MÉTHODE PRATIQUE", minutes:8,
+    intro:"Passe d’une demande isolée à une méthode reproductible : préparer les données, demander un résultat, contrôler puis finaliser.",
+    objective:"Décrire un processus de travail avec l’IA et ses points de contrôle.",
+    sections:[
+      {title:"1. Définis le résultat avant l’outil",text:"Décris le livrable attendu, son destinataire et le critère qui permettra de juger sa qualité. Exemple : un compte rendu d’une page, destiné à une équipe projet, avec décisions, actions, responsables et échéances."},
+      {title:"2. Prépare un contexte propre",text:"Rassemble uniquement les informations nécessaires. Retire les données personnelles ou confidentielles et utilise un outil autorisé par ton organisation. Si une information manque, demande à l’IA de la signaler au lieu de la deviner."},
+      {title:"3. Sépare génération et contrôle",text:"Demande d’abord une première version structurée. Ensuite, dans une seconde étape, fais vérifier la cohérence, les omissions et les affirmations qui nécessitent une source. Termine par une relecture humaine."},
+      {title:"4. Mesure la valeur",text:"Compare le temps total, corrections comprises, avec ta méthode habituelle. Note les erreurs détectées, la qualité du résultat et les cas où il vaut mieux ne pas utiliser l’IA."}
+    ],
+    exampleTitle:"Workflow prêt à adapter",
+    example:"Entrée : notes fictives de réunion. Étape A : extraire les faits sans interprétation. Étape B : organiser en décisions, actions, responsables et dates. Étape C : lister les informations absentes. Étape D : vérifier chaque élément avec les notes d’origine. Sortie : compte rendu relu par une personne.",
+    takeaway:"Un bon workflow ne se limite pas à écrire un prompt : il prévoit les entrées, les contrôles, les limites et la validation finale.",
+    question:"Quel élément rend un workflow IA plus fiable ?",
+    options:["Automatiser toutes les étapes sans contrôle.","Prévoir des contrôles et une validation humaine avant diffusion.","Utiliser le prompt le plus long possible, quel que soit le besoin."],
+    answer:1, explanation:"Exact : les contrôles et la validation humaine limitent les erreurs avant que le résultat soit utilisé."
+  },
+  {
+    id:"prompt-lab", title:"Atelier : améliorer un prompt en trois versions", kicker:"ATELIER GUIDÉ", minutes:9,
+    intro:"Tu vas transformer une demande vague en consigne exploitable, puis ajouter des critères de qualité et une étape de vérification.",
+    objective:"Améliorer un prompt en utilisant le contexte, le format, les contraintes et les critères de réussite.",
+    sections:[
+      {title:"Version 1 — la demande vague",text:"« Prépare une présentation sur notre projet. » Le sujet est connu, mais le public, la durée, le message principal et la structure ne le sont pas. Le résultat risque donc d’être générique."},
+      {title:"Version 2 — ajouter le contexte et le format",text:"« Tu aides un chef de projet à préparer une présentation de 5 minutes pour une équipe interne. Propose 5 diapositives : objectif, avancement, risques, décisions attendues et prochaines étapes. »"},
+      {title:"Version 3 — ajouter des garde-fous",text:"« Utilise uniquement les informations fournies. N’invente aucun chiffre, nom ou échéance. Marque [À CONFIRMER] lorsqu’une donnée manque. Pour chaque risque, indique l’impact et la prochaine action. Termine par une liste des informations à vérifier avant présentation. »"},
+      {title:"Évalue le résultat",text:"Note la réponse sur 5 critères : pertinence pour le public, structure, fidélité aux informations, clarté des actions et absence d’invention. Si un critère est faible, modifie uniquement la consigne qui lui correspond puis recommence."}
+    ],
+    exampleTitle:"À toi de pratiquer",
+    example:"Prends une tâche non confidentielle que tu connais. Écris un prompt vague, améliore-le avec le contexte et le format, puis ajoute deux critères de qualité et une consigne explicite pour signaler les informations manquantes. Compare les versions.",
+    takeaway:"Améliore un prompt par itérations : une modification ciblée, un résultat observé, puis une nouvelle vérification.",
+    question:"Après une première réponse médiocre, quelle est la meilleure démarche ?",
+    options:["Tout recommencer en demandant simplement « fais mieux ».","Identifier le critère manquant et modifier précisément la consigne.","Ajouter le plus de contraintes possible, même si elles se contredisent."],
+    answer:1, explanation:"Oui : un retour ciblé permet de comprendre ce qui manque et d’améliorer la prochaine version."
+  },
+  {
+    id:"final-project", title:"Projet final : créer ton assistant de travail responsable", kicker:"PROJET FINAL", minutes:15,
+    intro:"Mobilise les acquis du parcours pour concevoir un mini-assistant IA sur une tâche professionnelle simple, utile et sans données sensibles.",
+    objective:"Présenter un cas d’usage, un prompt complet, une méthode de vérification et un indicateur de valeur.",
+    sections:[
+      {title:"Étape 1 — choisis un cas d’usage sûr",text:"Choisis une tâche répétitive à faible risque : préparer un ordre du jour, reformuler un texte non confidentiel, organiser des tâches ou créer une première trame de compte rendu à partir de notes fictives. Évite les décisions automatisées et les données réelles sensibles."},
+      {title:"Étape 2 — rédige le brief",text:"Décris le public, l’objectif, le contexte disponible, le format attendu, les contraintes et les éléments interdits. Ajoute : « N’invente aucun fait. Signale les informations manquantes et distingue les faits des suggestions. »"},
+      {title:"Étape 3 — prévois les contrôles",text:"Avant de diffuser le résultat, vérifie les noms, dates, chiffres, affirmations factuelles, omissions et éventuelles données confidentielles. Si une information importante ne peut pas être vérifiée, retire-la ou marque-la comme à confirmer."},
+      {title:"Étape 4 — mesure le bénéfice",text:"Réalise un essai avec un exemple fictif. Chronomètre le travail manuel puis le travail avec l’IA, corrections comprises. Compare aussi la qualité et le nombre de corrections nécessaires. N’adopte le workflow que s’il est utile et conforme aux règles applicables."},
+      {title:"Livrable final",text:"Prépare une fiche d’une page contenant : le problème choisi, le prompt final, un exemple d’entrée fictive, le format de sortie, ta checklist de vérification, les risques identifiés et un indicateur de réussite. Tu peux la conserver dans tes notes ou la présenter à un collègue."}
+    ],
+    exampleTitle:"Modèle de prompt final",
+    example:"« Tu es un assistant de préparation de réunion. À partir des notes fictives ci-dessous, produis un compte rendu structuré en décisions, actions, responsables et échéances. N’ajoute aucun fait qui ne figure pas dans les notes. Utilise [À CONFIRMER] si une information manque. Termine par une checklist des éléments que je dois vérifier avant diffusion. Format : tableau simple, puis 3 lignes de synthèse. »",
+    takeaway:"Un projet réussi est utile, vérifiable, respectueux de la confidentialité et évalué sur des résultats concrets — pas seulement sur la qualité apparente du texte.",
+    question:"Quel livrable montre le mieux que ton mini-assistant est prêt à être testé ?",
+    options:["Un prompt seul, sans exemple ni contrôle.","Une fiche avec cas d’usage, prompt, exemple fictif, checklist de vérification et mesure du bénéfice.","Une promesse de gain de temps sans mesure."],
+    answer:1, explanation:"Exact : le prompt est une partie du projet. Les exemples, contrôles, risques et indicateurs rendent le test concret et responsable."
   }
 ];
 
 const paths = [
-  {id:"ai",title:"Maîtriser l’IA au travail",category:"IA & PRODUCTIVITÉ",icon:"✦",style:"violet",desc:"Utilise l’IA avec méthode, esprit critique et confiance.",lessons:5,minutes:"35 min",status:"Disponible"},
+  {id:"ai",title:"Maîtriser l’IA au travail",category:"IA & PRODUCTIVITÉ",icon:"✦",style:"violet",desc:"Utilise l’IA avec méthode, esprit critique et confiance.",lessons:8,minutes:"60 min",status:"Disponible"},
   {id:"career",title:"Emploi & évolution",category:"CARRIÈRE",icon:"↗",style:"peach",desc:"Prépare tes entretiens et mets tes compétences en valeur.",lessons:8,minutes:"50 min",status:"Bientôt"},
   {id:"project",title:"Les bases de la gestion de projet",category:"ORGANISATION",icon:"▦",style:"green",desc:"Priorise, organise les actions et communique clairement.",lessons:8,minutes:"55 min",status:"Bientôt"}
 ];
