@@ -1,4 +1,4 @@
-const CACHE_NAME = "skillup-mvp-v13";
+const CACHE_NAME = "skillup-mvp-v14";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json"];
 
 self.addEventListener("install", event => {
