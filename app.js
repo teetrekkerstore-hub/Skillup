@@ -498,6 +498,7 @@ function initCookieConsent(){
   document.getElementById("cookie-settings").addEventListener("click",openCookieSettings);
   document.getElementById("cookie-save").addEventListener("click",()=>saveCookieConsent(document.getElementById("cookie-analytics").checked,document.getElementById("cookie-personalization").checked));
   document.getElementById("cookie-close").addEventListener("click",closeCookieConsent);
+  document.querySelectorAll("[data-cookie-settings]").forEach(el=>el.addEventListener("click",openCookieSettings));
 }
 
 renderStats();
