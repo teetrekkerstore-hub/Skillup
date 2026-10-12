@@ -5,7 +5,9 @@ Prototype PWA en français pour salariés et personnes en reconversion. Aucun co
 ## Fonctionnalités incluses
 - Accueil avec défi du jour et tableau de bord
 - Parcours « Maîtriser l'IA au travail » : 5 leçons textuelles et quiz
-- Corrections immédiates et explications
+- Corrections immédiates et explications détaillées
+- Atelier de construction de workflow IA et amélioration de prompts
+- Projet final avec cas d’usage, contrôles de qualité et mesure du bénéfice
 - XP, niveaux, série de jours et progression
 - Sauvegarde locale via `localStorage`
 - Interface responsive mobile/ordinateur
@@ -70,7 +72,7 @@ Pour un simple aperçu, ouvre `index.html` dans un navigateur récent. Pour test
 
 ## Plan de travail adapté à 5 h/semaine
 1. Semaine 1 : faire tester le prototype à 5 personnes et noter les incompréhensions.
-2. Semaine 2 : améliorer la première leçon et la navigation mobile.
-3. Semaine 3 : préparer 10 à 15 leçons supplémentaires et les relire.
+2. Semaine 2 : tester les 8 leçons IA et améliorer la navigation mobile.
+3. Semaine 3 : construire les parcours Emploi & évolution et Gestion de projet, puis relire les contenus.
 4. Semaine 4 : décider si les utilisateurs justifient l'ajout de comptes et d'une base de données.
 5. Ensuite : tester une offre Premium seulement après des retours d'usage réels.
