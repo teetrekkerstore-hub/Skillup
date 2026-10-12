@@ -232,6 +232,8 @@ function renderProgress(){
 }
 function openLesson(index){
   activeLessonIndex=Math.max(0,Math.min(index,lessons.length-1));
+  state.currentLesson=activeLessonIndex;
+  saveState();
   selectedOption=null;answered=false;
   const l=lessons[activeLessonIndex];
   document.getElementById("lesson-category").textContent="IA & PRODUCTIVITÉ";
@@ -292,11 +294,11 @@ document.addEventListener("click",e=>{
   const viewBtn=e.target.closest("[data-view]");
   if(viewBtn){e.preventDefault();showView(viewBtn.dataset.view);return;}
   const pathBtn=e.target.closest("[data-open-path]");
-  if(pathBtn){if(pathBtn.dataset.openPath==="ai")openLesson(state.completed.length<lessons.length?state.completed.length:0);else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  if(pathBtn){if(pathBtn.dataset.openPath==="ai")openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
   const option=e.target.closest("[data-option]");
   if(option){handleOptionClick(option);return;}
 });
-document.getElementById("continue-learning").addEventListener("click",()=>openLesson(state.completed.length<lessons.length?state.completed.length:0));
+document.getElementById("continue-learning").addEventListener("click",()=>openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1)));
 document.getElementById("back-to-path").addEventListener("click",()=>showView("paths"));
 document.getElementById("check-answer").addEventListener("click",checkAnswer);
 document.getElementById("next-lesson").addEventListener("click",nextLesson);
