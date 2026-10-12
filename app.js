@@ -666,7 +666,7 @@ function downloadCertificatePdf(){
  doc.setDrawColor(...gold);doc.setLineWidth(0.5);doc.line(76,63,W-76,63);
  doc.setFont("helvetica","normal");doc.setTextColor(...muted);doc.setFontSize(10);doc.text("SkillUp atteste que",W/2,73,{align:"center"});
  // Keep long names on one line where possible, with automatic font sizing
- let nameSize=26;doc.setFont("times","bolditalic");while(nameSize>15&&doc.getTextWidth(name)>205){nameSize--;doc.setFontSize(nameSize);}
+ let nameSize=26;doc.setFont("times","bolditalic");doc.setFontSize(nameSize);while(nameSize>15&&doc.getTextWidth(name)>205){nameSize--;doc.setFontSize(nameSize);}
  doc.setFontSize(nameSize);doc.setTextColor(142,65,76);doc.text(name,W/2,88,{align:"center",maxWidth:220});
  doc.setDrawColor(225,220,206);doc.line(48,94,W-48,94);
  doc.setFont("helvetica","normal");doc.setTextColor(...muted);doc.setFontSize(10);doc.text("a validé avec succès le parcours de formation",W/2,103,{align:"center"});
