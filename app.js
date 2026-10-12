@@ -253,6 +253,8 @@ function openLesson(index){
   document.getElementById("check-answer").disabled=true;
   document.getElementById("next-lesson").classList.add("hidden");
   document.getElementById("next-lesson").textContent=activeLessonIndex===lessons.length-1?"Terminer le parcours ✓":"Leçon suivante →";
+  document.getElementById("previous-lesson").disabled=activeLessonIndex===0;
+  document.getElementById("previous-lesson").style.opacity=activeLessonIndex===0?".45":"1";
   document.getElementById("lesson-progress-bar").style.width=`${(activeLessonIndex/lessons.length)*100}%`;
   showView("lesson");
 }
@@ -298,6 +300,8 @@ document.getElementById("continue-learning").addEventListener("click",()=>openLe
 document.getElementById("back-to-path").addEventListener("click",()=>showView("paths"));
 document.getElementById("check-answer").addEventListener("click",checkAnswer);
 document.getElementById("next-lesson").addEventListener("click",nextLesson);
+document.getElementById("previous-lesson").addEventListener("click",()=>{if(activeLessonIndex>0)openLesson(activeLessonIndex-1);});
+document.getElementById("restart-course-top").addEventListener("click",()=>{openLesson(0);toast("Tu reprends le parcours depuis la première leçon. Ta progression est conservée.");});
 document.getElementById("reset-progress").addEventListener("click",()=>{
   if(confirm("Réinitialiser les points et toutes les leçons terminées sur cet appareil ?")){
     state={...defaultState,notes:{}};saveState();renderStats();renderProgress();toast("Progression réinitialisée.");
