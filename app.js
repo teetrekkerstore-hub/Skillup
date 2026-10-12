@@ -139,6 +139,12 @@ const paths = [
   {id:"project",title:"Les bases de la gestion de projet",category:"ORGANISATION",icon:"▦",style:"green",desc:"Priorise, organise les actions et communique clairement.",lessons:8,minutes:"55 min",status:"Bientôt"}
 ];
 
+const SUPABASE_URL = "https://pjqlfavburyfwjrribsy.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Os65_MqwHWETkNc8M8q3SQ_UgFkOATq";
+const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let authUser = null;
+let authMode = "login";
+let cloudWriteTimer = null;
 const STORAGE_KEY = "skillup-mvp-v1";
 const defaultState = {xp:0, completed:[], passed:[], currentLesson:0, lastActive:null, streak:0, bestStreak:0, lastDailyBonus:null, notes:{}};
 let state = loadState();
@@ -153,7 +159,18 @@ function loadState(){
   try { return {...defaultState,...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}; }
   catch { return {...defaultState}; }
 }
-function saveState(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
+function saveState(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  if(authUser && supabaseClient){
+    clearTimeout(cloudWriteTimer);
+    cloudWriteTimer=setTimeout(async()=>{
+      const {error}=await supabaseClient.from("learner_state").upsert({
+        user_id:authUser.id, progress:state, updated_at:new Date().toISOString()
+      },{onConflict:"user_id"});
+      if(error) console.warn("SkillUp cloud sync:",error.message);
+    },500);
+  }
+}
 if(!state.notes || typeof state.notes!=="object") state.notes={};
 function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function daysBetween(a,b){ return Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/86400000); }
@@ -327,8 +344,104 @@ document.getElementById("save-note").addEventListener("click",()=>{
   document.getElementById("note-status").textContent=state.notes[l.id]?"Note enregistrée sur cet appareil":"Note effacée";
   toast(state.notes[l.id]?"Ton idée a été enregistrée.":"Ta note a été effacée.");
 });
+
+function setAuthMessage(message,isError=false){
+  const el=document.getElementById("auth-message");
+  el.textContent=message;el.classList.toggle("error",isError);
+}
+function showAuthModal(){
+  document.getElementById("auth-modal").classList.remove("hidden");
+  updateAuthForm();
+}
+function hideAuthModal(){document.getElementById("auth-modal").classList.add("hidden");}
+function updateAuthForm(){
+  const logged=!!authUser;
+  document.getElementById("auth-open").textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"Mon compte"):"Connexion";
+  document.getElementById("auth-title").textContent=logged?"Ton compte SkillUp":"Retrouve ta progression";
+  document.getElementById("auth-description");
+  document.querySelector(".auth-description").textContent=logged
+    ? "Ton compte est connecté. Ta progression est synchronisée en ligne."
+    : "Crée un compte gratuit pour retrouver tes leçons et tes résultats sur tes appareils.";
+  document.getElementById("auth-name").classList.toggle("hidden",authMode!=="signup"||logged);
+  document.querySelector('label[for="auth-name"]').classList.toggle("hidden",authMode!=="signup"||logged);
+  document.getElementById("auth-email").classList.toggle("hidden",logged);
+  document.querySelector('label[for="auth-email"]').classList.toggle("hidden",logged);
+  document.getElementById("auth-password").classList.toggle("hidden",logged);
+  document.querySelector('label[for="auth-password"]').classList.toggle("hidden",logged);
+  document.getElementById("auth-submit").classList.toggle("hidden",logged);
+  document.getElementById("auth-submit").textContent=authMode==="signup"?"Créer mon compte":"Se connecter";
+  document.getElementById("auth-switch").classList.toggle("hidden",logged);
+  document.getElementById("auth-switch").textContent=authMode==="signup"?"Déjà inscrit ? Se connecter":"Pas encore de compte ? Créer un compte";
+  document.getElementById("auth-signout").classList.toggle("hidden",!logged);
+  setAuthMessage("");
+}
+async function loadCloudState(user){
+  const {data,error}=await supabaseClient.from("learner_state").select("progress").eq("user_id",user.id).maybeSingle();
+  if(error){console.warn("SkillUp cloud load:",error.message);return;}
+  const cloud=data?.progress;
+  if(cloud && typeof cloud==="object" && Object.keys(cloud).length){
+    state={...defaultState,...cloud,notes:cloud.notes&&typeof cloud.notes==="object"?cloud.notes:{}};
+    if(!Number.isInteger(state.currentLesson))state.currentLesson=0;
+    saveState();
+  }else{
+    const {error:writeError}=await supabaseClient.from("learner_state").upsert({user_id:user.id,progress:state,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+    if(writeError)console.warn("SkillUp cloud initial save:",writeError.message);
+  }
+  renderStats();renderProgress();
+}
+async function initAuth(){
+  if(!supabaseClient){document.getElementById("auth-open").disabled=true;return;}
+  const {data}=await supabaseClient.auth.getSession();
+  authUser=data.session?.user||null;
+  updateAuthForm();
+  if(authUser)await loadCloudState(authUser);
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    authUser=session?.user||null;
+    updateAuthForm();
+    if(authUser)setTimeout(()=>loadCloudState(authUser),0);
+    else if(event==="SIGNED_OUT")toast("Tu es déconnecté de SkillUp.");
+  });
+}
+document.getElementById("auth-open").addEventListener("click",showAuthModal);
+document.getElementById("auth-close").addEventListener("click",hideAuthModal);
+document.getElementById("auth-modal").addEventListener("click",e=>{if(e.target.id==="auth-modal")hideAuthModal();});
+document.getElementById("auth-switch").addEventListener("click",()=>{
+  authMode=authMode==="login"?"signup":"login";updateAuthForm();
+});
+document.getElementById("auth-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const email=document.getElementById("auth-email").value.trim();
+  const password=document.getElementById("auth-password").value;
+  const display_name=document.getElementById("auth-name").value.trim();
+  const submit=document.getElementById("auth-submit");
+  submit.disabled=true;setAuthMessage(authMode==="signup"?"Création du compte…":"Connexion…");
+  try{
+    if(authMode==="signup"){
+      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{display_name}}});
+      if(error)throw error;
+      if(data.session){
+        authUser=data.user;await loadCloudState(authUser);setAuthMessage("Compte créé et connecté !");updateAuthForm();toast("Bienvenue sur SkillUp !");
+      }else{
+        setAuthMessage("Compte créé ! Consulte tes e-mails pour confirmer ton adresse, puis connecte-toi.");
+        authMode="login";document.getElementById("auth-switch").textContent="Pas encore de compte ? Créer un compte";
+      }
+    }else{
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error)throw error;
+      authUser=data.user;await loadCloudState(authUser);updateAuthForm();toast("Connexion réussie !");
+    }
+  }catch(err){setAuthMessage(err.message||"Une erreur est survenue. Réessaie.",true);}
+  finally{submit.disabled=false;}
+});
+document.getElementById("auth-signout").addEventListener("click",async()=>{
+  const {error}=await supabaseClient.auth.signOut();
+  if(error){setAuthMessage(error.message,true);return;}
+  authUser=null;updateAuthForm();hideAuthModal();
+});
+
 renderStats();
 renderProgress();
+initAuth();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
