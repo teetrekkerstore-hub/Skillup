@@ -187,8 +187,9 @@ function touchDaily(){
 }
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2500)}
 function pct(){return Math.round(state.completed.length/lessons.length*100)}
+let activePathId="ai";
 function showView(name){
-  if(!authUser && ["lesson","paths","progress"].includes(name)){
+  if(!authUser && ["lesson","paths","program","progress"].includes(name)){
     showView("home");
     authMode="signup";showAuthModal();
     setAuthMessage(name==="progress"?"Crée un compte gratuit pour sauvegarder et consulter ta progression.":"Crée un compte gratuit pour découvrir les parcours et commencer une formation.");
@@ -229,7 +230,6 @@ function renderPaths(){
   const count=document.getElementById("path-results-count");
   if(count) count.textContent=`${filtered.length} parcours affiché${filtered.length>1?"s":""}`;
   document.getElementById("hero-progress-label").textContent=`${pct()}% terminé`;
-  renderModuleOverview();
 }
 function nextIncompleteIndex(){
   const index=lessons.findIndex(l=>!state.completed.includes(l.id));
@@ -237,9 +237,13 @@ function nextIncompleteIndex(){
 }
 function renderModuleOverview(){
   const panel=document.getElementById("module-overview");if(!panel)return;
+  const path=paths.find(p=>p.id===activePathId)||paths.find(p=>p.id==="ai");
+  document.getElementById("program-page-title").textContent=path.title;
+  document.getElementById("program-page-description").textContent=path.desc;
+  document.getElementById("program-eyebrow").textContent=path.category;
   const completedCount=lessons.filter(l=>state.completed.includes(l.id)).length,nextIndex=nextIncompleteIndex();
+  if(path.id!=="ai"){panel.innerHTML='<div class="empty-results">Le contenu de ce parcours arrive bientôt.</div>';return;}
   panel.innerHTML=`<div class="module-overview-head"><div><p class="eyebrow">LE PROGRAMME</p><h2 id="module-overview-title">Maîtriser l’IA au travail</h2><p class="muted">Consulte les titres des prochaines leçons et retrouve librement celles que tu as déjà terminées.</p></div><div class="module-progress-count">${completedCount}<span>/${lessons.length} terminées</span></div></div><div class="module-list">${lessons.map((l,i)=>{const done=state.completed.includes(l.id),available=i===nextIndex&&!done,locked=!done&&!available;const status=done?"Terminée":available?(completedCount===0?"À commencer":"Prochaine leçon"):"À débloquer";const action=done?`<button class="module-action module-review" data-review-lesson="${i}">↺ Revoir</button>`:available?`<button class="module-action module-start" data-start-lesson="${i}">${completedCount===0?"Commencer":"Continuer"} →</button>`:`<span class="module-lock" aria-label="Contenu verrouillé">🔒</span>`;return `<article class="module-row ${done?"is-complete":locked?"is-locked":"is-next"}"><span class="module-number">${done?"✓":String(i+1).padStart(2,"0")}</span><div class="module-row-copy"><strong>${l.title}</strong><small>${status} · ${l.minutes} min</small></div>${action}</article>`;}).join("")}</div>${completedCount===lessons.length?`<div class="module-finished"><strong>Tout le programme est terminé !</strong><p>Tu peux revoir chaque leçon ou passer le quiz final pour valider tes compétences.</p><button class="button button-primary" data-start-final-quiz>Accéder au quiz final →</button></div>`:""}`;
-  panel.classList.remove("hidden");
 }
 function renderStats(){
   const logged=!!authUser;
@@ -340,7 +344,7 @@ function checkAnswer(){
   if(reviewMode)toast("Mode révision : ta progression et tes XP ne changent pas.");else if(correct)toast(alreadyDone?"Bonne réponse ! Aucun XP supplémentaire.":"Leçon terminée : progression enregistrée.");else toast(alreadyDone?"Révision terminée, progression conservée.":"Leçon terminée, tu peux continuer.");
 }
 function nextLesson(){
-  if(reviewMode){showView("paths");renderModuleOverview();document.getElementById("module-overview").scrollIntoView({behavior:"smooth",block:"start"});return;}
+  if(reviewMode){showView("program");return;}
   if(activeLessonIndex<lessons.length-1)openLesson(activeLessonIndex+1);else {startFinalQuiz();}
 }
 document.addEventListener("click",e=>{
@@ -348,14 +352,24 @@ document.addEventListener("click",e=>{
   const viewBtn=e.target.closest("[data-view]");
   if(viewBtn){e.preventDefault();showView(viewBtn.dataset.view);return;}
   const pathBtn=e.target.closest("[data-open-path]");
-  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour découvrir le programme.");return;}if(pathBtn.dataset.openPath==="ai"){renderModuleOverview();document.getElementById("module-overview").scrollIntoView({behavior:"smooth",block:"start"});}else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  if(pathBtn){
+    if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour découvrir les parcours et commencer une formation.");return;}
+    const selectedPath=paths.find(p=>p.id===pathBtn.dataset.openPath);
+    if(!selectedPath)return;
+    if(selectedPath.status!=="Disponible"){toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+    activePathId=selectedPath.id;
+    showView("program");
+    return;
+  }
+  const backPaths=e.target.closest("#back-to-paths");
+  if(backPaths){showView("paths");return;}
   const reviewBtn=e.target.closest("[data-review-lesson]");if(reviewBtn){openLesson(Number(reviewBtn.dataset.reviewLesson),true);return;}
   const startBtn=e.target.closest("[data-start-lesson]");if(startBtn){openLesson(Number(startBtn.dataset.startLesson),false);return;}
   const option=e.target.closest("[data-option]");
   if(option){handleOptionClick(option);return;}
 });
 document.getElementById("continue-learning").addEventListener("click",()=>{if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour continuer ton apprentissage.");return;}if(state.completed.length>=lessons.length){startFinalQuiz();return;}openLesson(nextIncompleteIndex(),false);});
-document.getElementById("back-to-path").addEventListener("click",()=>showView("paths"));
+document.getElementById("back-to-path").addEventListener("click",()=>showView("program"));
 document.getElementById("check-answer").addEventListener("click",checkAnswer);
 document.getElementById("next-lesson").addEventListener("click",nextLesson);
 document.getElementById("previous-lesson").addEventListener("click",()=>{if(activeLessonIndex>0)openLesson(activeLessonIndex-1);});
