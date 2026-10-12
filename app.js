@@ -236,9 +236,9 @@ function renderStats(){
   document.getElementById("continue-learning").innerHTML=logged?"Continuer mon parcours <span>→</span>":"Créer un compte pour commencer <span>→</span>";
   document.getElementById("auth-open").textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"Mon compte"):"Créer un compte";
   const avatar=document.getElementById("profile-avatar"); avatar.hidden=!logged; avatar.textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"S").trim().charAt(0).toUpperCase():"";
-  document.getElementById("home-title").textContent=logged?("Salut, "+(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"futur toi")+". ✦"):"Le prochain niveau, c’est toi. ✦";
-  document.getElementById("home-eyebrow").textContent=logged?"TON MOMENT POUR PROGRESSER":"APPRENDS. PROGRESSE. RÉUSSIS.";
-  document.getElementById("home-lead").textContent=logged?"10 minutes aujourd’hui peuvent changer ta façon de travailler.":"Des formations courtes, des compétences utiles et des progrès visibles — à ton rythme.";
+  document.getElementById("home-title").textContent=logged?("Salut, "+(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"futur toi")+". ✦"):"Construis tes compétences. Prouve ce que tu sais faire. ✦";
+  document.getElementById("home-eyebrow").textContent=logged?"TON MOMENT POUR PROGRESSER":"APPRENDS. PROUVE. DÉCROCHE.";
+  document.getElementById("home-lead").textContent=logged?"10 minutes aujourd’hui peuvent changer ta façon de travailler." :"En 30 jours, construis tes premières preuves de compétences numériques et prépare-toi concrètement à décrocher un stage, un premier emploi ou une mission freelance.";
   document.getElementById("today-label").hidden=!logged;
   document.getElementById("top-xp").textContent=`${state.xp} XP`;
   document.getElementById("stat-xp").textContent=`${state.xp} XP`;
