@@ -199,9 +199,9 @@ function showView(name){
   document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
   document.querySelectorAll(".mobile-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
-  if(name==="progress") renderProgress();
   if(name==="paths") renderPaths();
-   if(name==="progress") renderProgress();
+  if(name==="program") renderModuleOverview();
+  if(name==="progress") renderProgress();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function cardHTML(path){
