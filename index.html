@@ -100,7 +100,7 @@
       </section>
 
       <section id="view-lesson" class="view">
-        <button class="back-button" id="back-to-path">← Retour au parcours</button>
+        <div class="lesson-nav-top"><button class="back-button" id="back-to-path">← Retour au parcours</button><button class="text-button" id="restart-course-top">↺ Recommencer depuis le début</button></div>
         <div class="lesson-layout">
           <article class="lesson-main">
             <div class="lesson-topline"><span class="tag" id="lesson-category">IA & PRODUCTIVITÉ</span><span class="muted" id="lesson-count">LEÇON 1 SUR 5</span></div>
@@ -120,8 +120,7 @@
               <p class="quiz-question" id="quiz-question"></p>
               <div id="quiz-options" class="quiz-options"></div>
               <div id="quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
-              <button class="button button-primary" id="check-answer" disabled>Vérifier ma réponse</button>
-              <button class="button button-primary hidden" id="next-lesson">Continuer →</button>
+              <div class="lesson-actions"><button class="button button-quiet" id="previous-lesson">← Leçon précédente</button><button class="button button-primary" id="check-answer" disabled>Vérifier ma réponse</button><button class="button button-primary hidden" id="next-lesson">Leçon suivante →</button></div>
             </div>
           </article>
           <aside class="lesson-aside">
