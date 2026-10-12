@@ -199,6 +199,7 @@ function showView(name){
   document.querySelectorAll(".mobile-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
   if(name==="progress") renderProgress();
   if(name==="paths") renderPaths();
+   if(name==="progress") renderProgress();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function cardHTML(path){
@@ -253,6 +254,7 @@ function renderProgress(){
   document.getElementById("progress-xp").textContent=state.xp;
   document.getElementById("best-streak").textContent=`${state.bestStreak||0} jour${state.bestStreak===1?"":"s"}`;
   document.getElementById("quizzes-passed").textContent=state.passed.length;
+  const progressList=document.getElementById("progress-path-list");
   const level=Math.floor(state.xp/100)+1, current=state.xp%100;
   const names=["Explorateur","Curieux","Pratiquant","Confirmé","Expert"];
   document.getElementById("level-name").textContent=names[Math.min(level-1,names.length-1)];
@@ -261,7 +263,7 @@ function renderProgress(){
   document.getElementById("level-caption").textContent=`${current} / 100 XP vers le niveau suivant`;
   document.getElementById("progress-path-list").innerHTML=paths.map(p=>{
     const progress=p.id==="ai"?pct():0;
-    return `<div class="progress-path-row"><div class="path-icon ${p.style}">${p.icon}</div><div class="progress-path-info"><strong>${p.title}</strong><small>${p.id==="ai"?`${state.completed.length} leçon(s) terminée(s) sur ${lessons.length}`:"Parcours bientôt disponible"}</small></div><div class="mini-progress"><span style="width:${progress}%"></span></div></div>`;
+    if(p.id==="ai" && state.completed.length>=lessons.length){const passed=state.finalPassed?.ai?.passed;return `<div class="progress-path-row"><div class="path-icon ${p.style}">${p.icon}</div><div class="progress-path-info"><strong>${p.title}</strong><small>${passed?"Quiz final validé · attestation disponible":"Leçons terminées · quiz final à réussir (30/40)"}</small></div><button class="text-button" data-start-final-quiz>${passed?"Repasser le quiz":"Passer le quiz final"} →</button>${passed?'<button class="text-button" data-open-certificate>Attestation ↗</button>':""}</div>`;}return `<div class="progress-path-row"><div class="path-icon ${p.style}">${p.icon}</div><div class="progress-path-info"><strong>${p.title}</strong><small>${p.id==="ai"?`${state.completed.length} leçon(s) terminée(s) sur ${lessons.length}`:"Parcours bientôt disponible"}</small></div><div class="mini-progress"><span style="width:${progress}%"></span></div></div>`;
   }).join("");
 }
 function openLesson(index){
@@ -323,13 +325,14 @@ function checkAnswer(){
 }
 function nextLesson(){
   if(activeLessonIndex<lessons.length-1)openLesson(activeLessonIndex+1);
-  else {showView("progress");toast("Bravo ! Tu as parcouru toutes les leçons disponibles.");}
+  else {startFinalQuiz();}
 }
 document.addEventListener("click",e=>{
+  const finalBtn=e.target.closest("[data-start-final-quiz]");if(finalBtn){startFinalQuiz();return;}const certBtn=e.target.closest("[data-open-certificate]");if(certBtn){openEarnedCertificate();return;}
   const viewBtn=e.target.closest("[data-view]");
   if(viewBtn){e.preventDefault();showView(viewBtn.dataset.view);return;}
   const pathBtn=e.target.closest("[data-open-path]");
-  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour commencer un parcours.");return;}if(pathBtn.dataset.openPath==="ai")openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour commencer un parcours.");return;}if(pathBtn.dataset.openPath==="ai"){if(state.completed.length>=lessons.length)startFinalQuiz();else openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));}else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
   const option=e.target.closest("[data-option]");
   if(option){handleOptionClick(option);return;}
 });
@@ -518,3 +521,114 @@ function initScrollReveals(){
   items.forEach(el=>observer.observe(el));
 }
 initScrollReveals();
+
+/* Final assessment: randomized 40-question sample from a larger question bank. */
+const finalQuestionBank = [
+{t:"Prompting",q:"Quel élément rend une demande à une IA plus utile ?",o:["Une consigne précise avec contexte et résultat attendu","Le plus de mots possible sans structure","Une demande volontairement ambiguë","Uniquement des majuscules"],a:0,e:"Le contexte, l’objectif et le format attendu aident l’IA à produire une réponse pertinente."},
+{t:"Prompting",q:"Tu veux un compte rendu de réunion. Que faut-il préciser ?",o:["Seulement « résume »","Le public, les décisions, les actions et le format souhaité","De répondre très vite, sans autre indication","De tout inventer si une information manque"],a:1,e:"Préciser les éléments attendus améliore l’utilité et la structure du compte rendu."},
+{t:"Prompting",q:"Une réponse est trop longue. Quelle relance est la plus efficace ?",o:["« Recommence »","« Fais mieux »","« Résume en cinq puces, avec les trois décisions principales »","Répéter exactement la même demande"],a:2,e:"Une relance avec une contrainte mesurable donne une direction claire."},
+{t:"Prompting",q:"Pourquoi demander à l’IA d’adopter un rôle peut-il aider ?",o:["Cela garantit toujours la vérité","Cela remplace la vérification","Cela autorise l’accès à des données privées","Cela oriente le ton et l’angle de la réponse"],a:3,e:"Un rôle sert de cadre de rédaction, sans garantir l’exactitude du contenu."},
+{t:"Prompting",q:"Quel format demander pour comparer plusieurs options ?",o:["Un texte sans titres","Un tableau avec critères communs","Une histoire fictive","Une liste de synonymes"],a:1,e:"Un tableau facilite la comparaison sur des critères identiques."},
+{t:"Prompting",q:"Une bonne instruction concernant les informations manquantes est :",o:["« Complète les trous en devinant »","« Ignore les incertitudes »","« Signale ce qui manque et pose des questions si nécessaire »","« Présente toutes les hypothèses comme des faits »"],a:2,e:"L’incertitude explicite réduit le risque d’informations inventées."},
+{t:"Prompting",q:"Comment améliorer une réponse qui ne respecte pas le ton souhaité ?",o:["Préciser le public et demander un ton adapté, avec un exemple","Ajouter des emojis au hasard","Supprimer le contexte","Demander une réponse plus longue uniquement"],a:0,e:"Le public, le ton et un exemple concret cadrent mieux la rédaction."},
+{t:"Prompting",q:"Pourquoi décomposer une tâche complexe en étapes ?",o:["Pour éviter tout contrôle humain","Pour rendre la tâche plus vérifiable et corriger chaque étape","Pour rendre le prompt plus mystérieux","Pour garantir un résultat parfait"],a:1,e:"Des étapes explicites facilitent le contrôle et les ajustements."},
+{t:"Vérification",q:"L’IA cite une statistique importante sans source. Que faire ?",o:["La reprendre directement","Supposer qu’elle est récente","La vérifier dans une source fiable et datée","La publier puis attendre les corrections"],a:2,e:"Les faits et chiffres importants doivent être vérifiés auprès de sources fiables."},
+{t:"Vérification",q:"Que signifie une hallucination d’IA ?",o:["Une réponse fluide mais fausse ou inventée","Une panne d’écran","Une réponse nécessairement mal écrite","Un document chiffré"],a:0,e:"Une IA peut produire une information plausible mais inexacte."},
+{t:"Vérification",q:"Quelle information faut-il vérifier en priorité avant diffusion ?",o:["La couleur des titres","Les espaces entre paragraphes","La longueur de la page","Les chiffres, noms, dates et affirmations sensibles"],a:3,e:"Les éléments factuels à fort impact demandent une vérification spécifique."},
+{t:"Vérification",q:"Quelle est la meilleure utilisation d’une réponse générée ?",o:["La considérer comme une décision finale","L’utiliser comme brouillon à vérifier et adapter","La diffuser sans la lire","La traiter comme une source juridique officielle"],a:1,e:"L’IA assiste le travail ; l’utilisateur reste responsable de la validation."},
+{t:"Vérification",q:"Deux sources fiables se contredisent. Quelle démarche adopter ?",o:["Choisir celle qui confirme son avis","Prendre la plus courte","Comparer leur date, méthode, périmètre et autorité","Mélanger les deux chiffres"],a:2,e:"Le contexte méthodologique et la fraîcheur expliquent souvent les écarts."},
+{t:"Vérification",q:"Pourquoi demander les sources d’une réponse ne suffit-il pas ?",o:["Parce qu’une source citée peut être inexistante ou mal interprétée","Parce que les sources sont toujours inutiles","Parce que les liens garantissent la vérité","Parce que l’IA ne peut jamais citer de documents"],a:0,e:"Il faut ouvrir et vérifier les références, pas seulement lire les citations proposées."},
+{t:"Vérification",q:"Que faire si tu ne peux pas vérifier une affirmation essentielle ?",o:["La présenter comme certaine","Supprimer toute nuance","Inventer une référence","La signaler comme non vérifiée ou ne pas l’utiliser"],a:3,e:"Une incertitude non résolue doit rester explicite."},
+{t:"Vérification",q:"Quel usage est le plus adapté à une IA générative ?",o:["Trancher seule une décision médicale","Produire une première version de texte à relire","Certifier automatiquement un contrat","Garantir l’absence d’erreurs"],a:1,e:"La rédaction de brouillons est utile, à condition de garder un contrôle humain."},
+{t:"Données & confidentialité",q:"Que faire avant de coller des données client dans un outil d’IA public ?",o:["Vérifier les règles approuvées et retirer les données sensibles","Copier tout le dossier","Changer uniquement la police","Demander à l’IA de garder le secret"],a:0,e:"Il faut respecter les politiques de sécurité et minimiser les données partagées."},
+{t:"Données & confidentialité",q:"Quelle donnée est particulièrement risquée à partager sans autorisation ?",o:["Un titre générique","Une idée publique","Un mot de passe ou un identifiant secret","Une formule de politesse"],a:2,e:"Les identifiants et secrets ne doivent pas être transmis à un service non autorisé."},
+{t:"Données & confidentialité",q:"À quoi sert l’anonymisation d’un exemple ?",o:["À garantir que toute donnée peut être partagée","À supprimer les identifiants permettant de relier les données à une personne","À rendre le texte plus long","À confirmer l’exactitude de l’IA"],a:1,e:"L’anonymisation vise à empêcher l’identification, même si elle doit être évaluée avec soin."},
+{t:"Données & confidentialité",q:"Un collègue te demande d’utiliser un outil non approuvé avec des données internes. Que faire ?",o:["L’utiliser discrètement","Partager seulement la moitié du fichier","Le faire si c’est urgent","Suivre la politique interne et choisir un outil autorisé"],a:3,e:"La rapidité ne remplace pas les règles de sécurité de l’organisation."},
+{t:"Données & confidentialité",q:"Pourquoi faut-il limiter les données envoyées à une IA ?",o:["Pour réduire l’exposition et ne transmettre que le nécessaire","Pour empêcher l’IA de répondre","Pour augmenter la taille du prompt","Pour éviter d’avoir à relire"],a:0,e:"Le principe de minimisation réduit les risques de confidentialité."},
+{t:"Données & confidentialité",q:"Un texte généré contient des informations personnelles non nécessaires. Que faire ?",o:["Les mettre en gras","Les envoyer à davantage de personnes","Les retirer et vérifier les règles de traitement","Les conserver pour faire plus professionnel"],a:2,e:"Ne conserver que les données nécessaires protège la vie privée."},
+{t:"Données & confidentialité",q:"Quelle affirmation sur les outils d’IA est correcte ?",o:["Tous utilisent les données de la même façon","Les règles de conservation et d’entraînement varient selon le service et le contrat","Aucun outil ne conserve de données","Une donnée publique ne peut jamais être sensible"],a:1,e:"Il faut vérifier les conditions et paramètres propres à chaque service."},
+{t:"Productivité",q:"Quelle tâche est un bon candidat à l’assistance de l’IA ?",o:["Approuver seule un paiement important","Contourner une procédure de contrôle","Envoyer automatiquement toutes les réponses sans supervision","Classer et résumer des notes non sensibles"],a:3,e:"Les tâches de synthèse et de structuration se prêtent bien à une assistance supervisée."},
+{t:"Productivité",q:"Comment utiliser l’IA pour préparer un courriel professionnel ?",o:["Fournir l’objectif, le destinataire et les points à couvrir, puis relire","Lui donner un mot de passe","Envoyer directement son premier jet","Demander un message sans préciser le contexte"],a:0,e:"Le contexte permet de rédiger un message plus adapté ; une relecture reste nécessaire."},
+{t:"Productivité",q:"Quel indicateur aide à évaluer le gain de temps d’un outil ?",o:["Le nombre d’emojis produits","Le nombre de mots du prompt","Le temps avant/après, avec la qualité du résultat","Le nombre de fenêtres ouvertes"],a:2,e:"Le gain doit être mesuré en tenant compte du temps et de la qualité."},
+{t:"Productivité",q:"Pour préparer une réunion avec l’IA, que peux-tu lui demander ?",o:["D’inventer les décisions à venir","Un ordre du jour structuré selon les objectifs fournis","De révéler les informations privées des participants","De remplacer la réunion dans tous les cas"],a:1,e:"Un ordre du jour peut être préparé à partir d’objectifs et d’informations appropriés."},
+{t:"Productivité",q:"Comment éviter un texte trop générique ?",o:["Supprimer tout détail","Ajouter des affirmations non vérifiées","Demander plus de jargon","Fournir des exemples, le public et les contraintes métier"],a:3,e:"Les détails utiles ancrent la réponse dans le besoin réel."},
+{t:"Productivité",q:"Quel est le meilleur usage de l’IA pour analyser un document long ?",o:["Demander une synthèse et vérifier les points importants dans le document original","Supposer que chaque détail sera retenu","Ignorer les annexes pertinentes","Partager le document sans vérifier sa sensibilité"],a:0,e:"La synthèse aide à naviguer, mais les conclusions doivent être contrôlées dans la source."},
+{t:"Productivité",q:"L’IA produit un tableau avec des totaux. Quelle vérification est utile ?",o:["Changer les couleurs","Vérifier uniquement le titre","Recalculer quelques valeurs et contrôler les formules","Supposer que le tableau est exact car il est bien présenté"],a:2,e:"Les calculs générés doivent être contrôlés, surtout s’ils soutiennent une décision."},
+{t:"Productivité",q:"Comment rendre une tâche récurrente plus efficace avec l’IA ?",o:["Changer d’objectif chaque fois","Créer un modèle de prompt, le tester et l’améliorer","Ne jamais documenter le processus","Automatiser sans étape de contrôle"],a:1,e:"Un modèle réutilisable permet d’obtenir des résultats plus cohérents et mesurables."},
+{t:"Esprit critique",q:"Une réponse confirme exactement ton opinion. Quelle attitude adopter ?",o:["La croire immédiatement","Écarter les avis contraires","Demander uniquement d’autres arguments similaires","Chercher aussi les contre-arguments et vérifier les faits"],a:3,e:"La recherche de contre-exemples aide à limiter le biais de confirmation."},
+{t:"Esprit critique",q:"Pourquoi un ton assuré n’est-il pas une preuve d’exactitude ?",o:["Le style fluide peut masquer une erreur","Les réponses assurées sont toujours fausses","Les erreurs sont toujours évidentes","Le ton mesure la qualité des sources"],a:0,e:"La confiance exprimée par le texte n’est pas une mesure fiable de vérité."},
+{t:"Esprit critique",q:"Comment évaluer une recommandation de l’IA ?",o:["Choisir celle qui est la plus élégante","Suivre la première proposition","Comparer les critères, hypothèses, risques et sources","Ne pas tenir compte du contexte"],a:2,e:"Une recommandation doit être confrontée aux contraintes et aux preuves disponibles."},
+{t:"Esprit critique",q:"Que faire si une réponse semble biaisée ?",o:["La diffuser telle quelle","Demander plusieurs perspectives et vérifier les représentations utilisées","Masquer les résultats gênants","Supposer que l’IA est neutre par définition"],a:1,e:"Comparer les perspectives aide à détecter les omissions et biais potentiels."},
+{t:"Esprit critique",q:"Une IA propose une décision RH automatisée sur des personnes. Quelle approche est préférable ?",o:["Laisser l’outil décider sans explication","Accepter le classement sans examen","Utiliser des critères cachés","Prévoir une évaluation humaine, équitable, transparente et conforme aux règles"],a:3,e:"Les décisions ayant un impact sur les personnes nécessitent des garanties et un contrôle adapté."},
+{t:"Esprit critique",q:"Quelle question aide à juger une analyse produite par IA ?",o:["Quelles hypothèses et limites pourraient changer cette conclusion ?","Peut-elle paraître plus certaine ?","Peut-on supprimer toutes les réserves ?","Peut-on éviter toute source ?"],a:0,e:"Examiner les hypothèses et limites permet de tester la solidité d’une conclusion."},
+{t:"Création & contenu",q:"Avant de publier une image créée avec l’IA, que faut-il considérer ?",o:["Seulement sa résolution","Uniquement la couleur dominante","Les droits, les personnes représentées, le contexte et les règles de publication","Rien si l’image est originale"],a:2,e:"Les droits, la transparence et les risques de représentation restent importants."},
+{t:"Création & contenu",q:"Comment garder une voix de marque cohérente avec l’IA ?",o:["Laisser chaque texte choisir un style différent","Fournir un guide de ton, des exemples et les expressions à éviter","Demander seulement un texte long","Copier une marque concurrente"],a:1,e:"Un guide rédactionnel aide à maintenir une identité cohérente."},
+{t:"Création & contenu",q:"Quel est un bon réflexe face à un texte généré proche d’un contenu existant ?",o:["Le publier sans contrôle","Changer deux mots et ignorer les droits","Prétendre qu’il n’a aucune source","Vérifier l’originalité, les sources et les droits applicables"],a:3,e:"La génération ne dispense pas de vérifier les droits et les ressemblances."},
+{t:"Création & contenu",q:"Comment demander une première version de présentation utile ?",o:["Préciser le public, l’objectif, la durée et les messages clés","Dire simplement « fais une présentation parfaite »","Ne fournir aucun sujet","Demander des chiffres inventés"],a:0,e:"Le public, le but et le format cadrent la proposition."},
+{t:"Création & contenu",q:"Que faire d’un contenu généré avant de le signer de ton nom ?",o:["Le considérer comme validé automatiquement","Le publier sans lecture","Le relire, vérifier les faits et l’adapter à sa propre intention","Supprimer toute nuance"],a:2,e:"L’auteur doit s’assurer que le contenu final est correct et représente bien son intention."},
+{t:"Automatisation",q:"Avant d’automatiser l’envoi d’un message généré, que prévoir ?",o:["Aucune journalisation","Des tests, des limites et une validation adaptée au risque","Un accès administrateur à tous les systèmes","La suppression de tous les contrôles"],a:1,e:"Les tests et garde-fous préviennent les erreurs à grande échelle."},
+{t:"Automatisation",q:"Quel processus faut-il automatiser en priorité ?",o:["Un processus mal compris et instable","Une décision sensible sans contrôle","Une tâche dont les règles sont claires et le risque maîtrisé","Une opération irréversible sans test"],a:2,e:"Un processus stable et bien défini se prête mieux à l’automatisation."},
+{t:"Automatisation",q:"Pourquoi tester une automatisation sur un petit échantillon ?",o:["Pour détecter les erreurs avant un déploiement plus large","Pour éviter toute mesure","Pour prouver que les erreurs sont impossibles","Pour remplacer la documentation"],a:0,e:"Un test limité permet de détecter les problèmes à moindre risque."},
+{t:"Automatisation",q:"Une automatisation échoue de façon inattendue. Quel réflexe adopter ?",o:["La relancer sans regarder","Masquer les erreurs","Augmenter les permissions sans analyse","Suspendre si nécessaire, examiner les journaux et corriger la cause"],a:3,e:"Il faut comprendre la cause et contenir les effets avant de relancer."},
+{t:"Bonnes pratiques",q:"Quel rôle l’humain doit-il garder dans l’usage professionnel de l’IA ?",o:["Aucun, si l’outil est récent","La responsabilité de contrôler, contextualiser et décider selon le risque","Uniquement la mise en page","La responsabilité uniquement en cas de panne"],a:1,e:"L’humain conserve la responsabilité du résultat et du niveau de contrôle nécessaire."},
+{t:"Bonnes pratiques",q:"Comment savoir si une IA apporte réellement de la valeur ?",o:["Parce qu’elle produit du texte rapidement","Parce que son interface est moderne","En mesurant la qualité, le temps gagné et les risques","Parce que tout le monde en parle"],a:2,e:"L’utilité doit être évaluée par des résultats concrets et des risques maîtrisés."},
+{t:"Bonnes pratiques",q:"Quelle est la meilleure première étape pour adopter l’IA au travail ?",o:["Choisir une tâche précise, peu risquée et mesurer le résultat","Automatiser toute l’activité","Partager tous les documents","Remplacer toutes les procédures"],a:0,e:"Commencer petit permet d’apprendre, de mesurer et d’ajuster sans exposer l’organisation."}
+];
+let finalQuiz = [];
+let finalQuizIndex = 0;
+let finalQuizSelection = null;
+let finalQuizScore = 0;
+let finalQuizLocked = false;
+function shuffleArray(items){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
+function startFinalQuiz(){
+  if(!authUser){showAuthModal();setAuthMessage("Connecte-toi pour valider un parcours et conserver ton attestation.");return;}
+  finalQuiz=shuffleArray(finalQuestionBank).slice(0,40).map(q=>({...q,choices:shuffleArray(q.o.map((text,i)=>({text,correct:i===q.a})))}));
+  finalQuizIndex=0;finalQuizScore=0;finalQuizSelection=null;finalQuizLocked=false;
+  document.getElementById("final-quiz-stage").classList.remove("hidden");
+  document.getElementById("final-quiz-result").classList.add("hidden");
+  renderFinalQuestion();showView("final-quiz");
+}
+function renderFinalQuestion(){
+ const q=finalQuiz[finalQuizIndex];finalQuizSelection=null;finalQuizLocked=false;
+ document.getElementById("final-quiz-counter").textContent=`Question ${finalQuizIndex+1} / 40`;
+ document.getElementById("final-quiz-progress").style.width=`${finalQuizIndex/40*100}%`;
+ document.getElementById("final-quiz-topic").textContent=q.t.toLocaleUpperCase("fr");
+ document.getElementById("final-quiz-question").textContent=q.q;
+ document.getElementById("final-quiz-options").innerHTML=q.choices.map((c,i)=>`<button type="button" class="final-quiz-option" data-final-option="${i}"><span class="final-option-letter">${String.fromCharCode(65+i)}</span><span>${c.text}</span></button>`).join("");
+ document.getElementById("final-quiz-feedback").textContent="";
+ document.getElementById("final-quiz-feedback").className="quiz-feedback final-quiz-feedback";
+ const next=document.getElementById("final-quiz-next");next.disabled=true;next.textContent="Valider et continuer →";
+}
+function submitFinalAnswer(){
+ if(finalQuizSelection===null||finalQuizLocked)return;
+ finalQuizLocked=true;const q=finalQuiz[finalQuizIndex],chosen=q.choices[finalQuizSelection];
+ if(chosen.correct)finalQuizScore++;
+ document.querySelectorAll("[data-final-option]").forEach((b,i)=>{b.disabled=true;if(q.choices[i].correct)b.classList.add("selected");});
+ const feedback=document.getElementById("final-quiz-feedback");feedback.className=`quiz-feedback final-quiz-feedback ${chosen.correct?"good":"bad"}`;feedback.textContent=(chosen.correct?"Bonne réponse. ":"Réponse attendue : ")+q.choices.find(c=>c.correct).text+" — "+q.e;
+ const next=document.getElementById("final-quiz-next");next.disabled=false;next.textContent=finalQuizIndex===39?"Voir mon résultat →":"Question suivante →";
+ document.getElementById("final-quiz-counter").textContent=`Question ${finalQuizIndex+1} / 40 · réponse enregistrée`;
+}
+function finishFinalQuiz(){
+ const passed=finalQuizScore>=30;const result=document.getElementById("final-quiz-result"),stage=document.getElementById("final-quiz-stage");
+ stage.classList.add("hidden");result.classList.remove("hidden");
+ document.getElementById("final-quiz-progress").style.width="100%";
+ result.innerHTML=`<div class="final-result-icon">${passed?"✓":"↻"}</div><p class="eyebrow">${passed?"PARCOURS VALIDÉ":"CONTINUE TES EFFORTS"}</p><h2>${passed?"Tu l’as fait. Bravo !":"Tu es tout près."}</h2><div class="final-result-score">${finalQuizScore}<span style="font-size:.42em;color:#858198">/40</span></div><p class="final-result-message">${passed?"Tu as atteint le seuil de 30/40. Ton attestation SkillUp est prête.":"Il te faut au moins 30 bonnes réponses sur 40. Révise les notions puis retente ta chance : les questions seront tirées à nouveau."}</p><div class="final-result-actions">${passed?'<button class="button button-primary" id="open-earned-certificate">Obtenir mon attestation →</button>':'<button class="button button-primary" id="retry-final-quiz">Repasser le quiz ↻</button>'}<button class="button button-quiet" data-view="progress">Ma progression</button></div>`;
+ const attempt={score:finalQuizScore,total:40,passed,completedAt:new Date().toISOString()};
+ state.finalAttempts=[...(state.finalAttempts||[]),attempt];
+ if(passed){state.finalPassed=state.finalPassed||{};state.finalPassed.ai={...attempt,reference:"SU-AI-"+new Date().toISOString().slice(0,10).replaceAll("-","")+"-"+Math.random().toString(36).slice(2,8).toUpperCase()};state.passed=[...new Set([...(state.passed||[]),"final-ai"])];}
+ saveState();renderProgress();
+}
+function openEarnedCertificate(){
+ const cert=state.finalPassed?.ai;if(!cert?.passed||cert.score<30){toast("Valide d’abord le quiz final pour obtenir l’attestation.");return;}
+ const name=authUser?.user_metadata?.full_name||authUser?.user_metadata?.name||authUser?.user_metadata?.given_name||authUser?.email?.split("@")[0]||"Apprenant SkillUp";
+ document.getElementById("certificate-learner").textContent=name;
+ document.getElementById("certificate-score").textContent=`${cert.score}/40`;
+ document.getElementById("certificate-date").textContent=new Date(cert.completedAt).toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"});
+ document.getElementById("certificate-reference").textContent=cert.reference;
+ showView("certificate");
+}
+document.getElementById("final-quiz-next").addEventListener("click",()=>{if(!finalQuizLocked){submitFinalAnswer();return;}if(finalQuizIndex<39){finalQuizIndex++;renderFinalQuestion();}else finishFinalQuiz();});
+document.getElementById("final-quiz-options").addEventListener("click",e=>{const b=e.target.closest("[data-final-option]");if(!b||finalQuizLocked)return;finalQuizSelection=Number(b.dataset.finalOption);document.querySelectorAll("[data-final-option]").forEach(x=>x.classList.toggle("selected",x===b));document.getElementById("final-quiz-next").disabled=false;document.getElementById("final-quiz-next").textContent="Valider ma réponse";});
+document.getElementById("final-quiz-exit").addEventListener("click",()=>showView("paths"));
+document.getElementById("certificate-print").addEventListener("click",()=>window.print());
+document.addEventListener("click",e=>{if(e.target.closest("#open-earned-certificate"))openEarnedCertificate();if(e.target.closest("#retry-final-quiz"))startFinalQuiz();});
