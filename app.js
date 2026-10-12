@@ -149,6 +149,7 @@ const STORAGE_KEY = "skillup-mvp-v1";
 const defaultState = {xp:0, completed:[], passed:[], currentLesson:0, lastActive:null, streak:0, bestStreak:0, lastDailyBonus:null, notes:{}};
 let state = {...defaultState};
 let activeLessonIndex = 0;
+let reviewMode = false;
 let selectedOption = null;
 let answered = false;
 let toastTimer;
@@ -209,7 +210,7 @@ function cardHTML(path){
   return `<article class="path-card">
     <div class="path-card-top"><div class="path-icon ${path.style}">${path.icon}</div><span class="path-status">${available?"● Disponible":"◷ Bientôt"}</span></div>
     <span class="eyebrow">${path.category}</span><h3>${path.title}</h3><p>${path.desc}</p>
-    <div class="path-card-foot"><span>${path.lessons} leçons · ${path.minutes}</span>${available?`<button class="path-open" data-open-path="${path.id}">${progress?"Continuer":"Découvrir"} →</button>`:`<span>À venir</span>`}</div>
+    <div class="path-card-foot"><span>${path.lessons} leçons · ${path.minutes}</span>${available?`<button class="path-open" data-open-path="${path.id}">Voir le programme →</button>`:`<span>À venir</span>`}</div>
     <div class="mini-progress"><span style="width:${progress}%"></span></div>
   </article>`;
 }
@@ -228,6 +229,17 @@ function renderPaths(){
   const count=document.getElementById("path-results-count");
   if(count) count.textContent=`${filtered.length} parcours affiché${filtered.length>1?"s":""}`;
   document.getElementById("hero-progress-label").textContent=`${pct()}% terminé`;
+  renderModuleOverview();
+}
+function nextIncompleteIndex(){
+  const index=lessons.findIndex(l=>!state.completed.includes(l.id));
+  return index<0?lessons.length-1:index;
+}
+function renderModuleOverview(){
+  const panel=document.getElementById("module-overview");if(!panel)return;
+  const completedCount=lessons.filter(l=>state.completed.includes(l.id)).length,nextIndex=nextIncompleteIndex();
+  panel.innerHTML=`<div class="module-overview-head"><div><p class="eyebrow">LE PROGRAMME</p><h2 id="module-overview-title">Maîtriser l’IA au travail</h2><p class="muted">Consulte les titres des prochaines leçons et retrouve librement celles que tu as déjà terminées.</p></div><div class="module-progress-count">${completedCount}<span>/${lessons.length} terminées</span></div></div><div class="module-list">${lessons.map((l,i)=>{const done=state.completed.includes(l.id),available=i===nextIndex&&!done,locked=!done&&!available;const status=done?"Terminée":available?(completedCount===0?"À commencer":"Prochaine leçon"):"À débloquer";const action=done?`<button class="module-action module-review" data-review-lesson="${i}">↺ Revoir</button>`:available?`<button class="module-action module-start" data-start-lesson="${i}">${completedCount===0?"Commencer":"Continuer"} →</button>`:`<span class="module-lock" aria-label="Contenu verrouillé">🔒</span>`;return `<article class="module-row ${done?"is-complete":locked?"is-locked":"is-next"}"><span class="module-number">${done?"✓":String(i+1).padStart(2,"0")}</span><div class="module-row-copy"><strong>${l.title}</strong><small>${status} · ${l.minutes} min</small></div>${action}</article>`;}).join("")}</div>${completedCount===lessons.length?`<div class="module-finished"><strong>Tout le programme est terminé !</strong><p>Tu peux revoir chaque leçon ou passer le quiz final pour valider tes compétences.</p><button class="button button-primary" data-start-final-quiz>Accéder au quiz final →</button></div>`:""}`;
+  panel.classList.remove("hidden");
 }
 function renderStats(){
   const logged=!!authUser;
@@ -266,9 +278,13 @@ function renderProgress(){
     if(p.id==="ai" && state.completed.length>=lessons.length){const passed=state.finalPassed?.ai?.passed;return `<div class="progress-path-row"><div class="path-icon ${p.style}">${p.icon}</div><div class="progress-path-info"><strong>${p.title}</strong><small>${passed?"Quiz final validé · attestation disponible":"Leçons terminées · quiz final à réussir (30/40)"}</small></div><button class="text-button" data-start-final-quiz>${passed?"Repasser le quiz":"Passer le quiz final"} →</button>${passed?'<button class="text-button" data-open-certificate>Attestation ↗</button>':""}</div>`;}return `<div class="progress-path-row"><div class="path-icon ${p.style}">${p.icon}</div><div class="progress-path-info"><strong>${p.title}</strong><small>${p.id==="ai"?`${state.completed.length} leçon(s) terminée(s) sur ${lessons.length}`:"Parcours bientôt disponible"}</small></div><div class="mini-progress"><span style="width:${progress}%"></span></div></div>`;
   }).join("");
 }
-function openLesson(index){
+function openLesson(index, asReview=false){
   if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour accéder aux parcours.");return;}
   activeLessonIndex=Math.max(0,Math.min(index,lessons.length-1));
+  const target=lessons[activeLessonIndex],alreadyCompleted=state.completed.includes(target.id);
+  if(asReview&&!alreadyCompleted){toast("Tu pourras revoir cette leçon après l’avoir terminée.");return;}
+  if(!asReview&&activeLessonIndex!==nextIncompleteIndex()&&!alreadyCompleted){toast("Termine d’abord la leçon précédente pour débloquer celle-ci.");return;}
+  reviewMode=asReview||alreadyCompleted;
   state.currentLesson=activeLessonIndex;
   saveState();
   selectedOption=null;answered=false;
@@ -291,7 +307,11 @@ function openLesson(index){
   document.getElementById("check-answer").classList.remove("hidden");
   document.getElementById("check-answer").disabled=true;
   document.getElementById("next-lesson").classList.add("hidden");
-  document.getElementById("next-lesson").textContent=activeLessonIndex===lessons.length-1?"Terminer le parcours ✓":"Leçon suivante →";
+  document.getElementById("next-lesson").textContent=reviewMode?"Retour au programme →":activeLessonIndex===lessons.length-1?"Terminer le parcours ✓":"Leçon suivante →";
+  document.getElementById("lesson-count").textContent=`LEÇON ${activeLessonIndex+1} SUR ${lessons.length}${reviewMode?" · RÉVISION":""}`;
+  document.getElementById("restart-course-top").classList.toggle("hidden",reviewMode);
+  document.getElementById("check-answer").textContent=reviewMode?"Vérifier ma réponse (sans impact)":"Vérifier ma réponse";
+  document.querySelector(".xp-aside").classList.toggle("hidden",reviewMode);
   document.getElementById("previous-lesson").disabled=activeLessonIndex===0;
   document.getElementById("previous-lesson").style.opacity=activeLessonIndex===0?".45":"1";
   document.getElementById("lesson-progress-bar").style.width=`${(activeLessonIndex/lessons.length)*100}%`;
@@ -315,33 +335,31 @@ function checkAnswer(){
   feedback.className=`quiz-feedback ${correct?"good":"bad"}`;
   feedback.textContent=(correct?"✓ Bonne réponse ! ":"Pas tout à fait. ")+l.explanation;
   const alreadyDone=state.completed.includes(l.id);
-  if(correct&&!state.passed.includes(l.id)){state.passed.push(l.id);state.xp+=20;}
-  if(!alreadyDone){state.completed.push(l.id);state.xp+=10;}
-  touchDaily();saveState();renderStats();
-  document.getElementById("check-answer").classList.add("hidden");
-  document.getElementById("next-lesson").classList.remove("hidden");
-  if(correct)toast(alreadyDone?"Bien joué !":"+"+(30-(state.passed.includes(l.id)?0:20))+" XP — leçon terminée !");
-  else toast(alreadyDone?"Révision terminée":"Leçon validée : +10 XP");
+  if(!reviewMode){if(correct&&!state.passed.includes(l.id)){state.passed.push(l.id);state.xp+=20;}if(!alreadyDone){state.completed.push(l.id);state.xp+=10;}touchDaily();saveState();renderStats();}
+  document.getElementById("check-answer").classList.add("hidden");document.getElementById("next-lesson").classList.remove("hidden");
+  if(reviewMode)toast("Mode révision : ta progression et tes XP ne changent pas.");else if(correct)toast(alreadyDone?"Bonne réponse ! Aucun XP supplémentaire.":"Leçon terminée : progression enregistrée.");else toast(alreadyDone?"Révision terminée, progression conservée.":"Leçon terminée, tu peux continuer.");
 }
 function nextLesson(){
-  if(activeLessonIndex<lessons.length-1)openLesson(activeLessonIndex+1);
-  else {startFinalQuiz();}
+  if(reviewMode){showView("paths");renderModuleOverview();document.getElementById("module-overview").scrollIntoView({behavior:"smooth",block:"start"});return;}
+  if(activeLessonIndex<lessons.length-1)openLesson(activeLessonIndex+1);else {startFinalQuiz();}
 }
 document.addEventListener("click",e=>{
   const finalBtn=e.target.closest("[data-start-final-quiz]");if(finalBtn){startFinalQuiz();return;}const certBtn=e.target.closest("[data-open-certificate]");if(certBtn){openEarnedCertificate();return;}
   const viewBtn=e.target.closest("[data-view]");
   if(viewBtn){e.preventDefault();showView(viewBtn.dataset.view);return;}
   const pathBtn=e.target.closest("[data-open-path]");
-  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour commencer un parcours.");return;}if(pathBtn.dataset.openPath==="ai"){if(state.completed.length>=lessons.length)startFinalQuiz();else openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));}else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour découvrir le programme.");return;}if(pathBtn.dataset.openPath==="ai"){renderModuleOverview();document.getElementById("module-overview").scrollIntoView({behavior:"smooth",block:"start"});}else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  const reviewBtn=e.target.closest("[data-review-lesson]");if(reviewBtn){openLesson(Number(reviewBtn.dataset.reviewLesson),true);return;}
+  const startBtn=e.target.closest("[data-start-lesson]");if(startBtn){openLesson(Number(startBtn.dataset.startLesson),false);return;}
   const option=e.target.closest("[data-option]");
   if(option){handleOptionClick(option);return;}
 });
-document.getElementById("continue-learning").addEventListener("click",()=>{if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour continuer ton apprentissage.");return;}openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));});
+document.getElementById("continue-learning").addEventListener("click",()=>{if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour continuer ton apprentissage.");return;}if(state.completed.length>=lessons.length){startFinalQuiz();return;}openLesson(nextIncompleteIndex(),false);});
 document.getElementById("back-to-path").addEventListener("click",()=>showView("paths"));
 document.getElementById("check-answer").addEventListener("click",checkAnswer);
 document.getElementById("next-lesson").addEventListener("click",nextLesson);
 document.getElementById("previous-lesson").addEventListener("click",()=>{if(activeLessonIndex>0)openLesson(activeLessonIndex-1);});
-document.getElementById("restart-course-top").addEventListener("click",()=>{openLesson(0);toast("Tu reprends le parcours depuis la première leçon. Ta progression est conservée.");});
+document.getElementById("restart-course-top").addEventListener("click",()=>{openLesson(nextIncompleteIndex(),false);toast("Tu reprends à la prochaine leçon non terminée. Ta progression est conservée.");});
 document.getElementById("reset-progress").addEventListener("click",()=>{
   if(confirm("Réinitialiser les points et toutes les leçons terminées sur cet appareil ?")){
     state={...defaultState,notes:{}};saveState();renderStats();renderProgress();toast("Progression réinitialisée.");
