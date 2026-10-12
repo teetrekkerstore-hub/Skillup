@@ -35,3 +35,6 @@
  .reflection-card{padding:15px}
  .reflection-footer{align-items:flex-start;flex-direction:column}
 }
+
+/* Lesson navigation controls */
+.lesson-nav-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.lesson-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}.lesson-actions .button{margin:0}.lesson-actions button:disabled{cursor:not-allowed}@media(max-width:560px){.lesson-nav-top{align-items:flex-start}.lesson-actions{display:grid;grid-template-columns:1fr}.lesson-actions button{width:100%}}
