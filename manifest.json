@@ -1,0 +1,12 @@
+{
+  "name": "SkillUp — Apprends et progresse",
+  "short_name": "SkillUp",
+  "description": "Des compétences professionnelles en 5 à 10 minutes par jour.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#141b33",
+  "lang": "fr",
+  "icons": []
+}
