@@ -197,6 +197,31 @@
         <button class="button button-quiet reset-button" id="reset-progress">Réinitialiser ma progression</button>
       </section>
 
+
+      <section id="view-final-quiz" class="view">
+        <div class="page-heading"><p class="eyebrow">VALIDATION DES COMPÉTENCES</p><h1>Le quiz final</h1><p class="muted lead">40 questions tirées aléatoirement. Il te faut au moins 30 bonnes réponses pour valider ton parcours.</p></div>
+        <div class="final-quiz-shell">
+          <div class="final-quiz-meta"><span class="tag">MAÎTRISER L’IA AU TRAVAIL</span><span id="final-quiz-counter">Question 1 / 40</span></div>
+          <div class="final-progress"><span id="final-quiz-progress"></span></div>
+          <div id="final-quiz-stage">
+            <p class="eyebrow" id="final-quiz-topic">QUESTION DE VALIDATION</p><h2 id="final-quiz-question">Prêt à démontrer ce que tu as appris ?</h2>
+            <div id="final-quiz-options" class="final-quiz-options"></div>
+            <div id="final-quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
+            <div class="final-quiz-actions"><button class="button button-quiet" id="final-quiz-exit">Quitter le quiz</button><button class="button button-primary" id="final-quiz-next" disabled>Valider et continuer →</button></div>
+          </div>
+          <div id="final-quiz-result" class="final-quiz-result hidden"></div>
+        </div>
+      </section>
+      <section id="view-certificate" class="view">
+        <div class="page-heading"><p class="eyebrow">UNE COMPÉTENCE DE PLUS</p><h1>Ton attestation SkillUp</h1><p class="muted lead">Tu as validé le quiz final. Voici ton attestation de réussite.</p></div>
+        <div class="certificate-paper" id="certificate-paper">
+          <div class="certificate-topline"><span class="certificate-brand"><span class="certificate-logo">S+</span> skillup<span>.</span></span><span class="certificate-seal">COMPÉTENCES<br>VALIDÉES</span></div>
+          <div class="certificate-center"><p class="certificate-eyebrow">ATTESTATION DE RÉUSSITE</p><h2>La progression se prouve.</h2><p>SkillUp atteste que</p><h1 id="certificate-learner">Apprenant SkillUp</h1><p>a validé avec succès le parcours</p><h2 class="certificate-course">Maîtriser l’IA au travail</h2><div class="certificate-score"><strong id="certificate-score">30/40</strong><span>bonnes réponses · seuil requis : 30/40</span></div></div>
+          <div class="certificate-footer"><div><span>DATE DE RÉUSSITE</span><strong id="certificate-date"></strong></div><div><span>RÉFÉRENCE</span><strong id="certificate-reference"></strong></div><div class="certificate-signature"><span>ÉMIS PAR</span><strong>SkillUp · Formation en ligne</strong></div></div>
+          <p class="certificate-disclaimer">Attestation de réussite délivrée par la plateforme SkillUp. Ce document atteste de la réussite au quiz interne et ne constitue pas un diplôme d’État ni une certification professionnelle enregistrée.</p>
+        </div>
+        <div class="certificate-actions"><button class="button button-primary" id="certificate-print">Télécharger / imprimer l’attestation ↗</button><button class="button button-quiet" data-view="progress">Retour à ma progression</button></div>
+      </section>
       <footer class="footer"><span>skillup<span class="brand-dot">.</span></span><span>Apprends un peu. Progresse beaucoup.</span><button type="button" class="cookie-footer-link" data-cookie-settings>Cookies</button><span>Fait pour progresser, chaque jour.</span></footer>
     </main>
   </div>
