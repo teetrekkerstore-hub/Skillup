@@ -147,7 +147,7 @@ let authMode = "login";
 let cloudWriteTimer = null;
 const STORAGE_KEY = "skillup-mvp-v1";
 const defaultState = {xp:0, completed:[], passed:[], currentLesson:0, lastActive:null, streak:0, bestStreak:0, lastDailyBonus:null, notes:{}};
-let state = loadState();
+let state = {...defaultState};
 let activeLessonIndex = 0;
 let selectedOption = null;
 let answered = false;
@@ -187,6 +187,7 @@ function touchDaily(){
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2500)}
 function pct(){return Math.round(state.completed.length/lessons.length*100)}
 function showView(name){
+  if(name==="lesson" && !authUser){showAuthModal();toast("Connecte-toi ou crée un compte pour accéder aux leçons.");return;}
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${name}`));
   document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
@@ -248,6 +249,7 @@ function renderProgress(){
   }).join("");
 }
 function openLesson(index){
+  if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour accéder aux parcours.");return;}
   activeLessonIndex=Math.max(0,Math.min(index,lessons.length-1));
   state.currentLesson=activeLessonIndex;
   saveState();
@@ -311,11 +313,11 @@ document.addEventListener("click",e=>{
   const viewBtn=e.target.closest("[data-view]");
   if(viewBtn){e.preventDefault();showView(viewBtn.dataset.view);return;}
   const pathBtn=e.target.closest("[data-open-path]");
-  if(pathBtn){if(pathBtn.dataset.openPath==="ai")openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
+  if(pathBtn){if(!authUser){showAuthModal();setAuthMessage("Crée un compte ou connecte-toi pour commencer un parcours.");return;}if(pathBtn.dataset.openPath==="ai")openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));else toast("Ce parcours arrive bientôt. On le prépare pour la prochaine version !");return;}
   const option=e.target.closest("[data-option]");
   if(option){handleOptionClick(option);return;}
 });
-document.getElementById("continue-learning").addEventListener("click",()=>openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1)));
+document.getElementById("continue-learning").addEventListener("click",()=>{if(!authUser){showAuthModal();setAuthMessage("Connecte-toi ou crée un compte pour continuer ton apprentissage.");return;}openLesson(Math.min(Number.isInteger(state.currentLesson)?state.currentLesson:0,lessons.length-1));});
 document.getElementById("back-to-path").addEventListener("click",()=>showView("paths"));
 document.getElementById("check-answer").addEventListener("click",checkAnswer);
 document.getElementById("next-lesson").addEventListener("click",nextLesson);
@@ -392,8 +394,9 @@ async function initAuth(){
   if(!supabaseClient){document.getElementById("auth-open").disabled=true;return;}
   const {data}=await supabaseClient.auth.getSession();
   authUser=data.session?.user||null;
-  updateAuthForm();
   if(authUser)await loadCloudState(authUser);
+  else { state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress(); }
+  updateAuthForm();
   supabaseClient.auth.onAuthStateChange((event,session)=>{
     authUser=session?.user||null;
     updateAuthForm();
@@ -435,7 +438,7 @@ document.getElementById("auth-form").addEventListener("submit",async e=>{
 document.getElementById("auth-signout").addEventListener("click",async()=>{
   const {error}=await supabaseClient.auth.signOut();
   if(error){setAuthMessage(error.message,true);return;}
-  authUser=null;updateAuthForm();hideAuthModal();
+  authUser=null;clearTimeout(cloudWriteTimer);state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress();showView("paths");updateAuthForm();hideAuthModal();
 });
 
 renderStats();
