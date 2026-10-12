@@ -234,3 +234,5 @@
 .photo-frame-label,.floating-proof,.hero-stamp{z-index:4}
 @media(max-width:760px){.guest-welcome{min-height:0;gap:22px;margin-top:0;padding:26px 22px 24px}.guest-photo{height:300px;min-height:300px;width:100%;margin:0}.guest-welcome h2{font-size:clamp(42px,11vw,58px)}.guest-benefits{flex-direction:column;gap:9px}.manifesto-strip{margin-bottom:36px}}
 @media(prefers-reduced-motion:reduce){.cookie-overlay{animation:none}}
+
+.cookie-footer-link{border:0;background:transparent;color:inherit;font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px}
