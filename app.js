@@ -227,6 +227,8 @@ function renderStats(){
   const logged=!!authUser;
   document.querySelectorAll(".member-only").forEach(el=>el.hidden=!logged);
   document.getElementById("guest-welcome").hidden=logged;
+  document.querySelectorAll(".guest-only").forEach(el=>el.hidden=logged);
+  document.getElementById("continue-learning").innerHTML=logged?"Continuer mon parcours <span>→</span>":"Créer un compte pour commencer <span>→</span>";
   document.getElementById("auth-open").textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"Mon compte"):"Créer un compte";
   const avatar=document.getElementById("profile-avatar"); avatar.hidden=!logged; avatar.textContent=logged?(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"S").trim().charAt(0).toUpperCase():"";
   document.getElementById("home-title").textContent=logged?("Salut, "+(authUser.user_metadata?.display_name||authUser.email?.split("@")[0]||"futur toi")+". ✦"):"Le prochain niveau, c’est toi. ✦";
@@ -418,6 +420,8 @@ async function initAuth(){
 document.getElementById("auth-open").addEventListener("click",()=>{authMode=authUser?"login":"signup";showAuthModal();});
 document.getElementById("guest-signup").addEventListener("click",()=>{authMode="signup";showAuthModal();});
 document.getElementById("guest-login").addEventListener("click",()=>{authMode="login";showAuthModal();});
+for(const id of ["mid-signup","bottom-signup"]){const button=document.getElementById(id);if(button)button.addEventListener("click",()=>{authMode="signup";showAuthModal();});}
+document.querySelectorAll("[data-category-cta]").forEach(button=>button.addEventListener("click",()=>{const category=button.dataset.categoryCta;if(category==="productivity"){showView("paths");activePathFilter="productivity";document.querySelectorAll("#path-filters [data-filter]").forEach(b=>b.classList.toggle("active",b.dataset.filter==="productivity"));renderPaths();}else{authMode="signup";showAuthModal();setAuthMessage("Crée ton compte gratuitement pour suivre les prochains parcours SkillUp.");}}));
 document.getElementById("google-auth").addEventListener("click",async()=>{if(!supabaseClient){setAuthMessage("Connexion indisponible.",true);return;}setAuthMessage("Redirection vers Google…");const {error}=await supabaseClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.href}});if(error)setAuthMessage(error.message||"Vérifie la configuration Google dans Supabase.",true);});
 document.getElementById("auth-close").addEventListener("click",hideAuthModal);
 document.getElementById("auth-modal").addEventListener("click",e=>{if(e.target.id==="auth-modal")hideAuthModal();});
