@@ -40,7 +40,7 @@
       </header>
 
       <section id="view-home" class="view active">
-        <div class="welcome-row">
+        <div class="welcome-row member-only" hidden>
           <div><p class="eyebrow" id="home-eyebrow">APPRENDS. PROUVE. DÉCROCHE.</p><h1 id="home-title">Construis tes compétences. Prouve ce que tu sais faire. <span class="wave">✦</span></h1><p class="muted lead" id="home-lead">En 30 jours, construis tes premières preuves de compétences numériques et prépare-toi concrètement à décrocher un stage, un premier emploi ou une mission freelance.</p></div>
           <div class="date-chip member-only" id="today-label" hidden>TON DÉFI DU JOUR</div>
         </div>
@@ -54,13 +54,11 @@
             <div class="guest-benefits"><span>✓ Des compétences utiles</span><span>✓ Des projets à montrer</span><span>✓ À ton rythme</span></div>
           </div>
           <div class="guest-photo" aria-label="Jeunes professionnels collaborant autour d’un projet"><div class="photo-frame-label label-top">COMPÉTENCES / 001—030</div><div class="photo-frame-label label-side">LEARN BY MAKING · 2026</div>
-            <div class="photo-frame-label label-top">COMPÉTENCES / 001—030</div>
-            <div class="photo-frame-label label-side">LEARN BY MAKING · 2026</div>
             <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1100&q=85" alt="Une équipe de jeunes professionnels travaillant ensemble autour d’un projet" loading="eager">
             <div class="photo-overlay"></div>
             <div class="floating-proof"><span class="proof-check">↗</span><div><strong>Du savoir au savoir-faire.</strong><small>Chaque projet devient une preuve.</small></div></div>
             <div class="hero-stamp"><span>30</span><small>JOURS<br>POUR AVANCER</small></div>
-            <div class="photo-caption">APPRENDS <span>·</span> PRATIQUE <span>·</span> PROUVE</div><div class="hero-stamp"><span>30</span><small>JOURS<br>POUR AVANCER</small></div>
+            <div class="photo-caption">APPRENDS <span>·</span> PRATIQUE <span>·</span> PROUVE</div>
           </div>
           <div class="hero-deco deco-one"></div><div class="hero-deco deco-two"></div>
         </section>
@@ -83,7 +81,7 @@
         </div>
 
         <div class="manifesto-strip guest-only"><span>01 / APPRENDS</span><span>02 / FABRIQUE</span><span>03 / PROUVE</span><span class="manifesto-note">Le potentiel ne suffit pas. Montre-le.</span></div>
-        <div class="manifesto-strip guest-only"><span>01 / APPRENDS</span><span>02 / FABRIQUE</span><span>03 / PROUVE</span><span class="manifesto-note">Le potentiel ne suffit pas. Montre-le.</span></div><section class="benefits-section guest-only">
+        <section class="benefits-section guest-only">
           <div class="section-heading"><div><p class="eyebrow">POURQUOI SKILLUP ?</p><h2>Apprendre doit produire quelque chose</h2><p class="muted">Parce que développer une compétence, c’est aussi être capable de montrer ce que l’on sait réaliser.</p></div></div>
           <div class="benefit-grid">
             <article class="benefit-card"><span class="benefit-icon violet">✦</span><h3>Des compétences orientées métier</h3><p>Apprends ce qui peut être utile dans une mission, un stage ou un premier poste.</p></article>
@@ -217,6 +215,26 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="cookie-consent" class="cookie-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cookie-title" aria-describedby="cookie-description">
+    <section class="cookie-panel">
+      <div class="cookie-kicker"><span class="cookie-symbol">✳</span><span>VOTRE VIE PRIVÉE COMPTE</span></div>
+      <button type="button" id="cookie-close" class="cookie-close" aria-label="Fermer les paramètres" hidden>×</button>
+      <h2 id="cookie-title">À vous de choisir.</h2>
+      <p id="cookie-description">SkillUp utilise des technologies essentielles au fonctionnement du site. Avec votre accord, des cookies facultatifs peuvent aussi servir à mesurer l’audience et à améliorer votre expérience. Vous pouvez modifier votre choix à tout moment.</p>
+      <div class="cookie-choices" id="cookie-choices" hidden>
+        <div class="cookie-choice"><div><strong>Cookies essentiels</strong><small>Nécessaires au fonctionnement et à la sécurité. Toujours actifs.</small></div><span class="cookie-always">Toujours actifs</span></div>
+        <label class="cookie-choice"><div><strong>Mesure d’audience</strong><small>Comprendre comment le site est utilisé pour l’améliorer.</small></div><input id="cookie-analytics" type="checkbox"></label>
+        <label class="cookie-choice"><div><strong>Personnalisation</strong><small>Mémoriser des préférences pour adapter votre expérience.</small></div><input id="cookie-personalization" type="checkbox"></label>
+      </div>
+      <div class="cookie-actions">
+        <button type="button" class="cookie-button cookie-primary" id="cookie-accept">Tout accepter</button>
+        <button type="button" class="cookie-button cookie-secondary" id="cookie-reject">Tout refuser</button>
+        <button type="button" class="cookie-text-button" id="cookie-settings">Personnaliser mes choix</button>
+        <button type="button" class="cookie-button cookie-primary hidden" id="cookie-save">Enregistrer mes choix</button>
+      </div>
+      <p class="cookie-footnote">Les cookies facultatifs restent désactivés tant que vous ne les autorisez pas.</p>
+    </section>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
