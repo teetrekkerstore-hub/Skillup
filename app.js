@@ -635,56 +635,72 @@ function downloadCertificatePdf(){
  if(!cert?.passed||cert.score<30){toast("Valide d’abord le quiz final pour obtenir l’attestation.");return;}
  const JsPDF=window.jspdf?.jsPDF;
  if(!JsPDF){toast("Le générateur PDF n’est pas disponible. Vérifie ta connexion puis réessaie.");return;}
- const name=document.getElementById("certificate-learner").textContent||"Apprenant SkillUp";
- const course=document.querySelector(".certificate-course")?.textContent||"Parcours SkillUp";
- const date=document.getElementById("certificate-date").textContent||new Date(cert.completedAt).toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"});
- const reference=document.getElementById("certificate-reference").textContent||cert.reference||"SKILLUP";
+ const name=(document.getElementById("certificate-learner")?.textContent||"Apprenant SkillUp").trim();
+ const course=(document.querySelector(".certificate-course")?.textContent||"Parcours SkillUp").trim();
+ const date=(document.getElementById("certificate-date")?.textContent||new Date(cert.completedAt||Date.now()).toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"})).trim();
+ const reference=(document.getElementById("certificate-reference")?.textContent||cert.reference||"SKILLUP").trim();
  const score=Number(cert.score)||0;
  const doc=new JsPDF({orientation:"landscape",unit:"mm",format:"a4",compress:true});
- const W=297,H=210;
- const ink=[23,24,45],purple=[113,96,217],gold=[205,173,91],muted=[111,108,132],paper=[255,254,249],pale=[242,238,255];
+ const W=297,H=210,mid=W/2;
+ const ink=[23,24,45],purple=[113,96,217],gold=[190,161,83],muted=[105,103,124],paper=[255,254,249],pale=[242,238,255];
  doc.setFillColor(...paper);doc.rect(0,0,W,H,"F");
- doc.setDrawColor(...gold);doc.setLineWidth(0.8);doc.rect(7,7,W-14,H-14);
- doc.setDrawColor(226,218,192);doc.setLineWidth(0.35);doc.rect(10,10,W-20,H-20);
- // Diplôme-inspired corner ribbons
+ // A restrained, diploma-style double frame
+ doc.setDrawColor(...gold);doc.setLineWidth(1);doc.rect(7,7,W-14,H-14);
+ doc.setDrawColor(226,218,192);doc.setLineWidth(.35);doc.rect(10,10,W-20,H-20);
+ // Simple corner ornaments, kept clear of all text
  [[0,0],[W,0],[0,H],[W,H]].forEach(([x,y],i)=>{
-   const sx=x===0?1:-1,sy=y===0?1:-1;
-   doc.setFillColor(...(i%2===0?purple:gold));
-   doc.triangle(x,y,x+sx*26,y,x,y+sy*5,"F");
-   doc.setFillColor(...(i%2===0?gold:purple));
-   doc.triangle(x,y+sy*5,x+sx*19,y+sy*5,x,y+sy*11,"F");
+  const sx=x===0?1:-1,sy=y===0?1:-1;
+  doc.setFillColor(...(i%2===0?purple:gold));doc.triangle(x,y,x+sx*22,y,x,y+sy*4,"F");
+  doc.setFillColor(...(i%2===0?gold:purple));doc.triangle(x,y+sy*4,x+sx*15,y+sy*4,x,y+sy*8,"F");
  });
- // Brand and seal
- doc.setFillColor(...ink);doc.roundedRect(20,18,12,12,2,2,"F");
- doc.setTextColor(217,255,114);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("S+",26,25.5,{align:"center"});
- doc.setTextColor(...ink);doc.setFontSize(15);doc.text("skillup",36,25.5);doc.setTextColor(...purple);doc.text(".",52,25.5);
- doc.setDrawColor(...purple);doc.setLineWidth(0.6);doc.circle(266,25,10,"S");
- doc.setTextColor(...purple);doc.setFontSize(5.7);doc.setFont("helvetica","bold");doc.text(["COMPÉTENCES","VALIDÉES"],266,23.8,{align:"center"});
- // Main title
- doc.setTextColor(...muted);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("ATTESTATION DE RÉUSSITE",W/2,42,{align:"center",charSpace:2});
- doc.setTextColor(...ink);doc.setFont("times","italic");doc.setFontSize(30);doc.text("Certificat de réussite",W/2,57,{align:"center"});
- doc.setDrawColor(...gold);doc.setLineWidth(0.5);doc.line(76,63,W-76,63);
- doc.setFont("helvetica","normal");doc.setTextColor(...muted);doc.setFontSize(10);doc.text("SkillUp atteste que",W/2,73,{align:"center"});
- // Keep long names on one line where possible, with automatic font sizing
- let nameSize=26;doc.setFont("times","bolditalic");doc.setFontSize(nameSize);while(nameSize>15&&doc.getTextWidth(name)>205){nameSize--;doc.setFontSize(nameSize);}
- doc.setFontSize(nameSize);doc.setTextColor(142,65,76);doc.text(name,W/2,88,{align:"center",maxWidth:220});
- doc.setDrawColor(225,220,206);doc.line(48,94,W-48,94);
- doc.setFont("helvetica","normal");doc.setTextColor(...muted);doc.setFontSize(10);doc.text("a validé avec succès le parcours de formation",W/2,103,{align:"center"});
- doc.setFont("helvetica","bold");doc.setFontSize(20);doc.setTextColor(...purple);doc.text(course,W/2,115,{align:"center",maxWidth:225});
- // Score medallion
- doc.setFillColor(...pale);doc.roundedRect(W/2-36,122,72,15,4,4,"F");
- doc.setTextColor(...purple);doc.setFont("helvetica","bold");doc.setFontSize(16);doc.text(score+"/40",W/2-3,132,{align:"center"});
- doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.setTextColor(...muted);doc.text("SCORE OBTENU · SEUIL REQUIS : 30/40",W/2+13,131.5,{align:"center"});
- // Date, reference and issuer line
- doc.setDrawColor(224,219,204);doc.line(22,151,W-22,151);
- const cols=[24,111,207];
- const labels=["DATE DE RÉUSSITE","RÉFÉRENCE DE L’ATTESTATION","DÉLIVRÉ PAR"];
- const vals=[date,reference,"SkillUp · Formation en ligne"];
- for(let i=0;i<3;i++){doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.setTextColor(...muted);doc.text(labels[i],cols[i],158);doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(...ink);doc.text(vals[i],cols[i],165,{maxWidth:i===1?85:72});}
- doc.setDrawColor(...gold);doc.line(24,173,80,173);doc.line(W-80,173,W-24,173);
- doc.setFont("times","italic");doc.setFontSize(9);doc.setTextColor(...ink);doc.text("La progression se prouve.",W/2,177,{align:"center"});
- doc.setFont("helvetica","normal");doc.setFontSize(6.3);doc.setTextColor(139,135,148);
- doc.text("Cette attestation confirme la réussite à l’évaluation interne SkillUp. Elle ne constitue pas un diplôme d’État ni une certification professionnelle enregistrée.",W/2,188,{align:"center",maxWidth:245});
+ // Brand
+ doc.setFillColor(...ink);doc.roundedRect(19,16,11,11,2,2,"F");
+ doc.setTextColor(217,255,114);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("S+",24.5,23.1,{align:"center"});
+ doc.setTextColor(...ink);doc.setFontSize(14);doc.text("SkillUp",34,23.5);
+ // Validation seal
+ doc.setDrawColor(...purple);doc.setLineWidth(.55);doc.circle(270,22,8.5,"S");
+ doc.setTextColor(...purple);doc.setFontSize(5.2);doc.text(["PARCOURS","VALIDÉ"],270,21.2,{align:"center"});
+ // One title only: no duplicate "certificat/attestation"
+ doc.setTextColor(...purple);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("ATTESTATION DE RÉUSSITE",mid,43,{align:"center",charSpace:2});
+ doc.setDrawColor(...gold);doc.setLineWidth(.65);doc.line(91,49,W-91,49);
+ doc.setTextColor(...muted);doc.setFont("helvetica","normal");doc.setFontSize(11);doc.text("SkillUp atteste que",mid,62,{align:"center"});
+ // Candidate name with measured font sizing
+ let nameSize=27;doc.setFont("times","bolditalic");doc.setFontSize(nameSize);
+ while(nameSize>16&&doc.getTextWidth(name)>210){nameSize--;doc.setFontSize(nameSize);}
+ doc.setTextColor(142,65,76);doc.text(name,mid,77,{align:"center",maxWidth:220});
+ doc.setDrawColor(225,220,206);doc.setLineWidth(.35);doc.line(53,84,W-53,84);
+ doc.setTextColor(...muted);doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text("a validé avec succès le parcours de formation",mid,95,{align:"center"});
+ // Course title is wrapped and vertically centered in a reserved band
+ doc.setTextColor(...purple);doc.setFont("helvetica","bold");
+ let courseSize=19;doc.setFontSize(courseSize);
+ while(courseSize>12&&doc.getTextWidth(course)>222){courseSize--;doc.setFontSize(courseSize);}
+ const courseLines=doc.splitTextToSize(course,222);
+ doc.setFontSize(courseSize);doc.text(courseLines,mid,107,{align:"center",lineHeightFactor:1.15});
+ const courseBottom=107+(courseLines.length-1)*courseSize*.42;
+ // One clean score line; score and threshold never overlap
+ const scoreY=Math.max(121,courseBottom+9);
+ doc.setFillColor(...pale);doc.roundedRect(mid-37,scoreY-7,74,15,3,3,"F");
+ doc.setTextColor(...purple);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(score+"/40",mid-18,scoreY+2,{align:"center"});
+ doc.setTextColor(...muted);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text("SEUIL DE RÉUSSITE : 30/40",mid+13,scoreY+1.5,{align:"center"});
+ // Metadata in three balanced columns
+ const metaY=Math.max(151,scoreY+15);
+ doc.setDrawColor(224,219,204);doc.line(20,metaY-5,W-20,metaY-5);
+ const blocks=[
+  {x:23,w:67,label:"DATE DE RÉUSSITE",value:date},
+  {x:104,w:91,label:"RÉFÉRENCE DE L’ATTESTATION",value:reference},
+  {x:207,w:65,label:"DÉLIVRÉ PAR",value:"SkillUp"}
+ ];
+ blocks.forEach(b=>{
+  doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.setTextColor(...muted);doc.text(b.label,b.x,metaY);
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...ink);
+  const lines=doc.splitTextToSize(b.value,b.w);
+  doc.text(lines.slice(0,2),b.x,metaY+6,{lineHeightFactor:1.15});
+ });
+ // Clear, factual disclaimer at the bottom; no decorative slogan
+ doc.setDrawColor(...gold);doc.setLineWidth(.45);doc.line(24,177, W-24,177);
+ doc.setFont("helvetica","normal");doc.setFontSize(7);doc.setTextColor(125,121,134);
+ doc.text("Cette attestation confirme la réussite à l’évaluation interne SkillUp.",mid,184,{align:"center"});
+ doc.text("Elle ne constitue pas un diplôme d’État ni une certification professionnelle enregistrée.",mid,189,{align:"center"});
  const safeName=name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-").replace(/^-|-$/g,"").slice(0,45)||"Apprenant";
  doc.save("SkillUp-Attestation-"+safeName+".pdf");
 }
