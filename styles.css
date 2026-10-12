@@ -203,3 +203,34 @@
 @keyframes stamp-turn{0%,85%,100%{transform:rotate(10deg) translateY(0)}90%{transform:rotate(14deg) translateY(-5px)}}
 @media(max-width:760px){.guest-welcome{grid-template-columns:1fr;gap:25px;min-height:0;padding:25px 21px 24px;border-radius:2px}.guest-welcome h2{font-size:clamp(46px,12vw,64px);line-height:.94;margin:20px 0}.guest-photo{min-height:290px;height:290px;margin:0 8px 0 0;width:calc(100% - 8px)}.hero-stamp{width:82px;height:82px;right:-12px;top:15%}.hero-stamp span{font-size:28px}.label-side{right:-21px}.floating-proof{left:-7px;bottom:46px;padding:12px}.manifesto-strip{flex-wrap:wrap;gap:12px 18px;margin-bottom:45px;font-size:8px}.manifesto-note{width:100%;margin-left:0}.benefits-section,.categories-section{margin:45px 0}.category-card{min-height:250px}.signup-banner{border-radius:2px}}
 @media(prefers-reduced-motion:reduce){.guest-welcome:before,.hero-stamp,.floating-proof{animation:none!important}}
+
+/* Cookie consent experience */
+.cookie-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(12,16,35,.58);backdrop-filter:blur(7px);animation:cookie-fade-in .22s ease both}
+.cookie-overlay.hidden{display:none}
+.cookie-panel{position:relative;width:min(100%,540px);max-height:min(90vh,760px);overflow:auto;background:#fffdf8;color:#17192d;border:1px solid #ffffffaa;border-radius:24px;padding:clamp(22px,5vw,38px);box-shadow:0 30px 100px #080b1d55}
+.cookie-kicker{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:850;letter-spacing:.16em;color:#6a5ae0}
+.cookie-symbol{display:grid;place-items:center;width:32px;height:32px;border-radius:11px;background:#eeeaff;font-size:19px}
+.cookie-panel h2{font-size:clamp(27px,5vw,38px);letter-spacing:-.055em;line-height:1.05;margin:22px 0 12px}
+.cookie-panel>p:not(.cookie-footnote){font-size:14px;line-height:1.75;color:#5f6274;margin:0 0 22px}
+.cookie-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cookie-button{min-height:48px;border-radius:12px;padding:12px 15px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.cookie-button:hover{transform:translateY(-2px)}
+.cookie-primary{grid-column:1/-1;border:1px solid #6d55e8;background:#6d55e8;color:white;box-shadow:0 9px 20px #6d55e82b}
+.cookie-secondary{border:1px solid #d8d7e5;background:#fff;color:#27263b}
+.cookie-text-button{border:0;background:transparent;color:#6756dc;font:inherit;font-size:12px;font-weight:750;text-decoration:underline;cursor:pointer;padding:10px}
+.cookie-footnote{font-size:11px;line-height:1.5;color:#88899a;text-align:center;margin:16px 0 0}
+.cookie-choice{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-top:1px solid #e9e7f1}
+.cookie-choice strong,.cookie-choice small{display:block}.cookie-choice strong{font-size:13px;margin-bottom:4px}.cookie-choice small{font-size:11px;line-height:1.5;color:#717487;max-width:310px}
+.cookie-choice input{width:20px;height:20px;accent-color:#6d55e8;flex-shrink:0}
+.cookie-always{font-size:10px;color:#4f8b70;font-weight:800;white-space:nowrap}
+.cookie-close{position:absolute;right:20px;top:20px;border:0;background:#f0eef8;border-radius:50%;width:32px;height:32px;font-size:22px;cursor:pointer;color:#45445b}
+@keyframes cookie-fade-in{from{opacity:0}to{opacity:1}}
+@media(max-width:520px){.cookie-overlay{align-items:flex-end;padding:10px}.cookie-panel{border-radius:24px 24px 16px 16px;padding:24px 20px;max-height:88vh}.cookie-panel h2{margin-top:17px}.cookie-panel>p:not(.cookie-footnote){font-size:13px}.cookie-button{font-size:12px;padding:11px 8px;min-height:46px}.cookie-actions{gap:8px}}
+/* Human-centered hero and cleaner first screen */
+.guest-welcome{min-height:520px}
+.guest-photo{min-height:430px;border-radius:18px;overflow:visible;isolation:isolate}
+.guest-photo img{border-radius:18px;filter:saturate(.94)}
+.photo-overlay{border-radius:18px;background:linear-gradient(180deg,#12162b08 35%,#12162b9c 100%)}
+.photo-frame-label,.floating-proof,.hero-stamp{z-index:4}
+@media(max-width:760px){.guest-welcome{min-height:0;gap:22px;margin-top:0;padding:26px 22px 24px}.guest-photo{height:300px;min-height:300px;width:100%;margin:0}.guest-welcome h2{font-size:clamp(42px,11vw,58px)}.guest-benefits{flex-direction:column;gap:9px}.manifesto-strip{margin-bottom:36px}}
+@media(prefers-reduced-motion:reduce){.cookie-overlay{animation:none}}
