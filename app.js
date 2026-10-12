@@ -464,9 +464,47 @@ document.getElementById("auth-signout").addEventListener("click",async()=>{
   authUser=null;clearTimeout(cloudWriteTimer);state={...defaultState,notes:{}};localStorage.removeItem(STORAGE_KEY);renderStats();renderProgress();showView("home");updateAuthForm();hideAuthModal();
 });
 
+
+/* Cookie consent: optional categories stay off until the visitor opts in. */
+const COOKIE_CONSENT_KEY = "skillup-cookie-consent-v1";
+function readCookieConsent(){
+  try { return JSON.parse(localStorage.getItem(COOKIE_CONSENT_KEY)||"null"); }
+  catch { return null; }
+}
+function closeCookieConsent(){ document.getElementById("cookie-consent").classList.add("hidden"); }
+function saveCookieConsent(analytics, personalization){
+  localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({essential:true,analytics:!!analytics,personalization:!!personalization,savedAt:new Date().toISOString()}));
+  closeCookieConsent();
+  toast("Tes préférences de confidentialité sont enregistrées.");
+}
+function openCookieSettings(){
+  const panel=document.getElementById("cookie-consent");
+  const choices=document.getElementById("cookie-choices");
+  const settingsButton=document.getElementById("cookie-settings");
+  const saveButton=document.getElementById("cookie-save");
+  const closeButton=document.getElementById("cookie-close");
+  const current=readCookieConsent();
+  document.getElementById("cookie-analytics").checked=!!current?.analytics;
+  document.getElementById("cookie-personalization").checked=!!current?.personalization;
+  choices.hidden=false; settingsButton.classList.add("hidden"); saveButton.classList.remove("hidden");
+  closeButton.hidden=false; panel.classList.remove("hidden");
+  document.getElementById("cookie-title").textContent="Vos préférences";
+}
+function initCookieConsent(){
+  const panel=document.getElementById("cookie-consent");
+  if(!readCookieConsent()) panel.classList.remove("hidden");
+  document.getElementById("cookie-accept").addEventListener("click",()=>saveCookieConsent(true,true));
+  document.getElementById("cookie-reject").addEventListener("click",()=>saveCookieConsent(false,false));
+  document.getElementById("cookie-settings").addEventListener("click",openCookieSettings);
+  document.getElementById("cookie-save").addEventListener("click",()=>saveCookieConsent(document.getElementById("cookie-analytics").checked,document.getElementById("cookie-personalization").checked));
+  document.getElementById("cookie-close").addEventListener("click",closeCookieConsent);
+}
+
 renderStats();
 renderProgress();
 initAuth();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+
+initCookieConsent();
