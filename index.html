@@ -33,6 +33,7 @@
       <header class="topbar">
         <div class="mobile-brand"><span class="brand-mark">S<span>+</span></span> skillup<span class="brand-dot">.</span></div>
         <div class="topbar-right">
+          <button class="auth-open-button" id="auth-open">Connexion</button>
           <div class="xp-pill"><span>✦</span> <strong id="top-xp">0 XP</strong></div>
           <button class="avatar" data-view="progress" aria-label="Voir ma progression">M</button>
         </div>
@@ -156,7 +157,29 @@
     <button data-view="paths"><span>▤</span>Parcours</button>
     <button data-view="progress"><span>↗</span>Progrès</button>
   </nav>
+  <div id="auth-modal" class="auth-modal hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="auth-panel">
+      <button type="button" class="auth-close" id="auth-close" aria-label="Fermer">×</button>
+      <span class="brand-mark">S<span>+</span></span>
+      <p class="eyebrow">TON ESPACE PERSONNEL</p>
+      <h2 id="auth-title">Retrouve ta progression</h2>
+      <p class="muted auth-description">Crée un compte gratuit pour retrouver tes leçons et tes résultats sur tes appareils.</p>
+      <form id="auth-form">
+        <label for="auth-name">Prénom <span>(pour l’inscription)</span></label>
+        <input id="auth-name" type="text" autocomplete="given-name" placeholder="Ton prénom">
+        <label for="auth-email">Adresse e-mail</label>
+        <input id="auth-email" type="email" autocomplete="email" required placeholder="toi@exemple.com">
+        <label for="auth-password">Mot de passe</label>
+        <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required placeholder="8 caractères minimum">
+        <p id="auth-message" class="auth-message" aria-live="polite"></p>
+        <button type="submit" class="button button-primary" id="auth-submit">Se connecter</button>
+      </form>
+      <button type="button" class="auth-switch" id="auth-switch">Pas encore de compte ? Créer un compte</button>
+      <button type="button" class="auth-signout hidden" id="auth-signout">Se déconnecter</button>
+    </div>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
 </html>
