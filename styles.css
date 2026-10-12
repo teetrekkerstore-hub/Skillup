@@ -38,3 +38,22 @@
 
 /* Lesson navigation controls */
 .lesson-nav-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.lesson-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}.lesson-actions .button{margin:0}.lesson-actions button:disabled{cursor:not-allowed}@media(max-width:560px){.lesson-nav-top{align-items:flex-start}.lesson-actions{display:grid;grid-template-columns:1fr}.lesson-actions button{width:100%}}
+
+/* Authentification SkillUp */
+.auth-open-button{border:1px solid #e5e7f1;background:#fff;color:#454064;border-radius:10px;padding:9px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.auth-modal{position:fixed;inset:0;z-index:1000;background:#11172ab8;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+.auth-modal.hidden{display:none}
+.auth-panel{position:relative;width:min(100%,420px);background:#fff;border-radius:22px;padding:28px;box-shadow:0 25px 90px #11172a40}
+.auth-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:28px;color:#7d8496;cursor:pointer}
+.auth-panel>.brand-mark{display:inline-flex;margin-bottom:18px}
+.auth-panel h2{font-size:25px;line-height:1.2;margin:8px 0}
+.auth-description{font-size:13px;line-height:1.6;margin-bottom:20px}
+#auth-form label{display:block;font-size:12px;font-weight:700;margin:12px 0 6px}
+#auth-form label span{font-weight:400;color:#8b92a4}
+#auth-form input{width:100%;box-sizing:border-box;border:1px solid #dfe2ed;border-radius:10px;padding:12px;font:inherit;font-size:14px;outline:none}
+#auth-form input:focus{border-color:#7667ee;box-shadow:0 0 0 3px #7667ee18}
+#auth-submit{width:100%;margin-top:8px}
+.auth-switch,.auth-signout{display:block;width:100%;border:0;background:transparent;color:#6558d9;font:inherit;font-size:12px;font-weight:700;padding:14px 5px 0;cursor:pointer}
+.auth-message{min-height:18px;font-size:12px;line-height:1.5;color:#6558d9}
+.auth-message.error{color:#b42318}
+@media(max-width:560px){.topbar-right{gap:8px}.auth-open-button{padding:8px 9px;font-size:11px}.auth-panel{padding:24px 20px}}
